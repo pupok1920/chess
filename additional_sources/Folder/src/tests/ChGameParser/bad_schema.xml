@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Game>
+    <Move from="12" to="28"/>
+    <Move from="64" to="36"/>
+</Game>
