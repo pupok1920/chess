@@ -6,7 +6,7 @@
 #include <QJSValue>
 
 int main(int argc, char *argv[])
-{
+{export COMMITTER= michgez OR vnosats OR ...
     QApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
