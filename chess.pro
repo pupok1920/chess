@@ -4,12 +4,13 @@ QT += qml quick widgets
 
 CONFIG += c++11
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    itemmodel.cpp
 
 RESOURCES += qml.qrc
 
-HEADERS += chmodeldata.h \
-    chmodeldata.h
+HEADERS += \
+    itemmodel.h
 
 
 
