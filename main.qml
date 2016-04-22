@@ -88,7 +88,7 @@ ApplicationWindow {
           }
       }
 
-      ListModel {
+/*      ListModel {
           id: dataModel
 
           ListElement {
@@ -349,7 +349,7 @@ ApplicationWindow {
               source: "src/rook_white.png"
           }
        }
-
+*/
       GridView {
           id: view
 
@@ -367,7 +367,7 @@ ApplicationWindow {
           Item {
               id: dndContainer
               anchors.fill: parent
-           }
+          }
 
           MouseArea {
               id: coords

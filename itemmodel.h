@@ -19,12 +19,12 @@ private:
     QList<item> itemList;
 
 public:
-    int SourceRole = Qt::UserRole + 1;
+    int source = Qt::UserRole + 1;
 
     ItemModel::ItemModel(QObject *parent)
         : QAbstractListModel(parent) {
             QHash<int, QByteArray> roles;
-            roles[SourceRole] = "source";
+            roles[source] = "source";
             setRoleNames(roles);
     }
 }
