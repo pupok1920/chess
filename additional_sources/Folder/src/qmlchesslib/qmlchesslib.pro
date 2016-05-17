@@ -15,7 +15,8 @@ SOURCES += chboardmodel.cpp \
     chselection.cpp \
     chparserbase.cpp \
     chmessagehandler.cpp \
-    chgameparser.cpp
+    chgameparser.cpp \
+    ../qmlchess/main.cpp
 
 RESOURCES += qml.qrc
 

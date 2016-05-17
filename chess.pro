@@ -5,12 +5,19 @@ QT += qml quick widgets
 CONFIG += c++11
 
 SOURCES += main.cpp \
-    itemmodel.cpp
+    square.cpp \
+    pieces.cpp \
+    boarddata.cpp \
+    boardmodel.cpp
 
 RESOURCES += qml.qrc
 
 HEADERS += \
-    itemmodel.h
+    square.h \
+    consts.h \
+    pieces.h \
+    boarddata.h \
+    boardmodel.h
 
 
 

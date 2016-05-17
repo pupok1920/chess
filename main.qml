@@ -19,7 +19,7 @@ ApplicationWindow {
     minimumHeight : 520
     maximumHeight : 520
 
-    Rectangle {
+    /*Rectangle {
         id: resetButton
         width: 100; height: 40
         radius: 7
@@ -39,7 +39,7 @@ ApplicationWindow {
              onClicked:  resetButton.color = "red"
         }
 
-    }
+    }*/
 
     Item {
       id: field
@@ -61,7 +61,7 @@ ApplicationWindow {
               height: view.cellHeight
               Image {
                   id: itemImage
-                  source: model.source
+                  source: item_source
                   anchors.centerIn: parent
                   smooth: true
                   fillMode: Image.PreserveAspectFit
@@ -357,7 +357,7 @@ ApplicationWindow {
           height: 480
           cellWidth: 60
           cellHeight: 60
-          model: dataModel
+          model: boardModel
           delegate: dndDelegate
 
           property int draggedItemIndex: -1
