@@ -16,10 +16,15 @@ QVariant BoardModel::data(const QModelIndex &index, int role) const {
     }
     const Piece *piece = _data.at(Square(index.row()));
     switch (role) {
-    case ItemSourceRole:
-        return piece ? piece->source() : "";
-    case ItemColorRole:
-        return piece ? piece->color() : "";
+        case ItemSourceRole: {
+            return piece ? piece->source(piece->color()) : "";
+        }
+        case ItemColorRole: {
+            return piece ? piece->color() : 2;
+        }
+        default: {
+            return QVariant();
+        }
     }
 }
 
@@ -35,7 +40,7 @@ QHash<int, QByteArray> BoardModel::roleNames() const{
 }
 
 void BoardModel::initializeData(BoardData &data) {
-    for(i = 0; i < BOARD_SIZE; ++i) {
+    for(unsigned i = 0; i < BOARD_SIZE; ++i) {
         data.add(Square(1, i), data.pawn(WHITE_COLOR));
         data.add(Square(6, i), data.pawn(BLACK_COLOR));
     }

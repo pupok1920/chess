@@ -15,7 +15,7 @@ void BoardData::add(const Square &square, const Piece *piece) {
     _data[square.index()] = piece;
 }
 
-const Piece *BoardData::at(const ChSquare &square) const {
+const Piece *BoardData::at(const Square &square) const {
     return _data.at(square.index());
 }
 

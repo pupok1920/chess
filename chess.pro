@@ -8,7 +8,7 @@ SOURCES += main.cpp \
     square.cpp \
     pieces.cpp \
     boarddata.cpp \
-    boardmodel.cpp
+    boardmodel.cpp \
 
 RESOURCES += qml.qrc
 
@@ -17,7 +17,7 @@ HEADERS += \
     consts.h \
     pieces.h \
     boarddata.h \
-    boardmodel.h
+    boardmodel.h \
 
 
 

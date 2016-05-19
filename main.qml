@@ -359,6 +359,7 @@ ApplicationWindow {
           cellHeight: 60
           model: boardModel
           delegate: dndDelegate
+          verticalLayoutDirection: GridView.BottomToTop
 
           property int draggedItemIndex: -1
 

@@ -1,9 +1,10 @@
 #ifndef BOARDDATA
 #define BOARDDATA
+#include <QCoreApplication>
 #include "pieces.h"
 
 class BoardData {
-private:
+public:
     BoardData();
     ~BoardData();
     void add(const Square &square, const Piece *piece);
@@ -17,6 +18,7 @@ private:
     const Piece *king(PieceColor color) const;
 
 private:
+    Q_DISABLE_COPY(BoardData)
     Pieces _data;
     Pawn _whitePawn;
     Pawn _blackPawn;

@@ -10,67 +10,91 @@ PieceColor PieceBase::color() const {
 
 Pawn::Pawn(PieceColor color):PieceBase(color) {}
 
-Pawn::source(PieceColor color) const {
+QString Pawn::source(const PieceColor color) const {
     switch (color) {
     case WHITE_COLOR:
         return "src/pawn_white.png";
+        break;
     case BLACK_COLOR:
-        return "src/queen_black.png";
+        return "src/pawn_black.png";
+        break;
+    default:
+        return "";
     }
 }
 
 Rook::Rook(PieceColor color):PieceBase(color) {}
 
-Rook::source(PieceColor color) const {
+QString Rook::source(const PieceColor color) const {
    switch (color) {
    case WHITE_COLOR:
        return "src/rook_white.png";
+       break;
    case BLACK_COLOR:
        return "src/rook_black.png";
+       break;
+   default:
+       return "";
    }
 }
 
 Knight::Knight(PieceColor color):PieceBase(color) {}
 
-Knight::source(PieceColor color) const {
+QString Knight::source(const PieceColor color) const {
    switch (color) {
    case WHITE_COLOR:
-       return "src/";
+       return "src/knight_white.png";
+       break;
    case BLACK_COLOR:
-       return "src/";
+       return "src/knight_black.png";
+       break;
+   default:
+       return "";
    }
 }
 
 Bishop::Bishop(PieceColor color):PieceBase(color) {}
 
-Bishop::source(PieceColor color) const {
+QString Bishop::source(const PieceColor color) const {
    switch (color) {
    case WHITE_COLOR:
-       return "src/knight_white.png";
+       return "src/bishop_white.png";
+       break;
    case BLACK_COLOR:
-       return "src/knight_black.png";
+       return "src/bishop_black.png";
+       break;
+   default:
+       return "";
    }
 }
 
 Queen::Queen(PieceColor color):PieceBase(color) {}
 
-Queen::source(PieceColor color) const {
+QString Queen::source(const PieceColor color) const {
    switch (color) {
    case WHITE_COLOR:
        return "src/queen_white.png";
+       break;
    case BLACK_COLOR:
        return "src/queen_black.png";
+       break;
+   default:
+       return "";
    }
 }
 
 King::King(PieceColor color):PieceBase(color) {}
 
-King::source(PieceColor color) const {
+QString King::source(const PieceColor color) const {
    switch (color) {
    case WHITE_COLOR:
        return "src/king_white.png";
+       break;
    case BLACK_COLOR:
        return "src/king_black.png";
+       break;
+   default:
+       return "";
    }
 }
 
