@@ -15,7 +15,8 @@ int main(int argc, char *argv[])
     board.initialize();
 
     QQmlApplicationEngine engine;
-    engine.rootContext()->setContextProperty("boardModel", &board);
+    QQmlContext *ctxt = engine.rootContext();
+    ctxt->setContextProperty("boardModel", &board);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     return app.exec();

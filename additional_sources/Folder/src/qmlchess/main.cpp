@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
         // Looks like Qt internals issue.
         QQmlApplicationEngine engine;
         QQmlContext *ctxt = engine.rootContext();
-        ctxt->setContextProperty("boardModel", &boardModel);
+        ctxt->setContextProperty("bModel", &boardModel);
 
         engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
