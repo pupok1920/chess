@@ -27,7 +27,7 @@ ApplicationWindow {
       Image {
           id: board
           anchors.fill: parent
-          source: "src/board.jpg"
+          source: "qrc:/assets/board.jpg"
       }
 
       Component {
@@ -40,7 +40,7 @@ ApplicationWindow {
                   id: itemImage
                   source: {
                       if(item_type != "") {
-                          "assets/" + item_type + "_" + item_role + ".png"
+                          "qrc:/assets/" + item_type + "_" + item_color + ".png"
                       }
                       else {
                           ""
@@ -95,7 +95,7 @@ ApplicationWindow {
           MouseArea {
               id: coords
               anchors.fill: parent
-              onReleased: {
+              /*onReleased: {
                     if (view.draggedItemIndex != -1 &&
                             view.draggedItemIndex >= 0 &&
                             view.draggedItemIndex < view.count &&
@@ -105,7 +105,7 @@ ApplicationWindow {
                         view.model.set(view.indexAt(mouseX, mouseY), {"source":sss})
                         view.model.set(view.draggedItemIndex, {"source":""})
                     }
-              }
+              }*/
 
               onPressed: {
                     view.draggedItemIndex = view.indexAt(mouseX, mouseY)
