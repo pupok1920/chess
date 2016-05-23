@@ -16,3 +16,6 @@ SOURCES +=  src/main.cpp \
 HEADERS += \
     src/BattleCity.h \
     src/ListPublisher.h
+
+DISTFILES += \
+    qml/main.qml

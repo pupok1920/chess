@@ -7,7 +7,7 @@ class BoardModel: public QAbstractListModel {
     Q_OBJECT
 
     enum Roles {
-        ItemSourceRole = Qt::UserRole + 1,
+        ItemTypeRole = Qt::UserRole + 1,
         ItemColorRole
     };
 

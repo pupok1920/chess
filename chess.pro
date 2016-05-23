@@ -4,20 +4,20 @@ QT += qml quick widgets
 
 CONFIG += c++11
 
-SOURCES += main.cpp \
-    square.cpp \
-    pieces.cpp \
-    boarddata.cpp \
-    boardmodel.cpp \
+SOURCES += src/main.cpp \
+    src/square.cpp \
+    src/pieces.cpp \
+    src/boarddata.cpp \
+    src/boardmodel.cpp \
 
-RESOURCES += qml.qrc
+RESOURCES += qml/qml.qrc
 
 HEADERS += \
-    square.h \
-    consts.h \
-    pieces.h \
-    boarddata.h \
-    boardmodel.h \
+    src/square.h \
+    src/consts.h \
+    src/pieces.h \
+    src/boarddata.h \
+    src/boardmodel.h \
 
 
 
