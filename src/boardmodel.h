@@ -19,8 +19,12 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
     void initialize();
 
+    Q_INVOKABLE void finishMove(Square &draggedFrom, Square &draggedTo);
+
 protected:
     QHash<int, QByteArray> roleNames() const;
+
+    void changeModel(bool &result, Square &draggedFrom, Square &draggedTo);
 
 private:
     BoardData _data;

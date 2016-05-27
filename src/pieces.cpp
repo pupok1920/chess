@@ -14,7 +14,7 @@ QString Pawn::type() const {
     return "pawn";
 }
 
-bool Pawn::moves(Square oldX, Square oldY, Square newX, Square newY) const {
+bool Pawn::moves() const {
     if(abs(oldY - newY) != 1 || abs(oldX - newX) > 1)
         return false;
     else
@@ -27,7 +27,7 @@ QString Rook::type() const {
     return "rook";
 }
 
-bool Rook::moves(Square oldX, Square oldY, Square newX, Square newY) const {
+bool Rook::moves(int oldX, int oldY, int newX, int newY) const {
     if((abs(oldX - newX) >= 1 && (oldY - newY) != 0)
             || (abs(oldY - newY) >= 1 && (oldX - newX) != 0))
         return false;
@@ -41,7 +41,7 @@ QString Knight::type() const {
     return "knight";
 }
 
-bool Knight::moves(Square oldX, Square oldY, Square newX, Square newY) const {
+bool Knight::moves(int oldX, int oldY, int newX, int newY) const {
     if(!((abs(oldX - newX) == 2 && abs(oldY - newY) == 1)
             || (abs(oldY - newY) == 2 && abs(oldX - newX) == 1)))
         return false;
@@ -55,7 +55,7 @@ QString Bishop::type() const {
     return "bishop";
 }
 
-bool Bishop::moves(Square oldX, Square oldY, Square newX, Square newY) const {
+bool Bishop::moves(int oldX, int oldY, int newX, int newY) const {
     if(abs(oldX - newX) != abs(oldY - newY))
         return false;
     else
@@ -68,7 +68,7 @@ QString Queen::type() const {
     return "queen";
 }
 
-bool Queen::moves(Square oldX, Square oldY, Square newX, Square newY) const {
+bool Queen::moves(int oldX, int oldY, int newX, int newY) const {
     if(((abs(oldX - newX) >= 1 && (oldY - newY) != 0)
         || (abs(oldY - newY) >= 1 && (oldX - newX) != 0))
                 || (abs(oldX - newX) != abs(oldY - newY)))
@@ -83,7 +83,7 @@ QString King::type() const {
     return "king";
 }
 
-bool King::moves(Square oldX, Square oldY, Square newX, Square newY) const {
+bool King::moves(int oldX, int oldY, int newX, int newY) const {
     if(abs(oldX - newX) > 1 || abs(oldY - newY) > 1)
         return false;
     else

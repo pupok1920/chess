@@ -55,7 +55,7 @@ ApplicationWindow {
               states: [
                   State {
                       name: "inDrag"
-                      when: index == view.draggedItemIndex
+                      when: index == view.draggedFrom
                       PropertyChanges {
                           target: itemImage; parent: dndContainer
                       }
@@ -83,7 +83,9 @@ ApplicationWindow {
           model: boardModel
           delegate: dndDelegate
 
-          property int draggedItemIndex: -1
+          //property int draggedItemIndex: -1
+          property int draggedFrom: -1
+          property int draggedTo: -1
 
           interactive: false
 
@@ -95,8 +97,17 @@ ApplicationWindow {
           MouseArea {
               id: coords
               anchors.fill: parent
-              /*onReleased: {
-                    if (view.draggedItemIndex != -1 &&
+
+              onPressed: {
+                    //view.draggedItemIndex = view.indexAt(mouseX, mouseY)
+                  view.draggedFrom = view.indexAt(mouseX, mouseY)
+              }
+
+              onReleased: {
+                  view.draggedTo = view.indexAt(mouseX, mouseY)
+
+                  boardModel.finishMove(draggedFrom, draggedTo)
+                    /*if (view.draggedItemIndex != -1 &&
                             view.draggedItemIndex >= 0 &&
                             view.draggedItemIndex < view.count &&
                             view.draggedItemIndex != view.indexAt(mouseX, mouseY)
@@ -104,11 +115,7 @@ ApplicationWindow {
                         var sss = view.model.get(view.draggedItemIndex).source
                         view.model.set(view.indexAt(mouseX, mouseY), {"source":sss})
                         view.model.set(view.draggedItemIndex, {"source":""})
-                    }
-              }*/
-
-              onPressed: {
-                    view.draggedItemIndex = view.indexAt(mouseX, mouseY)
+                    }*/
               }
           }
        }

@@ -37,6 +37,29 @@ void BoardModel::initialize() {
     initializeData(_data);
 }
 
+void BoardModel::finishMove(Square &draggedFrom, Square &draggedTo) {
+    int oldX = draggedFrom.row();
+    int oldY = draggedFrom.column();
+    int newX = draggedTo.row();
+    int newY = draggedTo.column();
+
+    const Piece *piece = _data.at(draggedFrom);
+    bool result = piece->moves(oldX, oldY, newX, newY);
+
+    changeModel(result, draggedFrom, draggedTo);
+
+    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1), 0);
+}
+
+void BoardModel::changeModel(bool &result, Square &draggedFrom, Square &draggedTo) {
+    const Piece *cur = _data.at(draggedFrom);
+    if(result) {
+        _data.remove(draggedTo);
+        _data.remove(draggedFrom);
+        _data.add(draggedTo, cur);
+    }
+}
+
 QHash<int, QByteArray> BoardModel::roleNames() const{
     QHash<int, QByteArray> roles;
     roles[ItemTypeRole] = "item_type";
