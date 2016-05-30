@@ -1,7 +1,8 @@
 #include "boardmodel.h"
 
 BoardModel::BoardModel(QObject *parent)
-    : QAbstractListModel(parent) {}
+    : QAbstractListModel(parent),
+    _activePlayer(WHITE_COLOR) {}
 
 BoardModel::~BoardModel(){}
 
@@ -35,28 +36,38 @@ QVariant BoardModel::data(const QModelIndex &index, int role) const {
 
 void BoardModel::initialize() {
     initializeData(_data);
+    _activePlayer = WHITE_COLOR;
+    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
 }
 
-void BoardModel::finishMove(Square &draggedFrom, Square &draggedTo) {
-    int oldX = draggedFrom.row();
-    int oldY = draggedFrom.column();
-    int newX = draggedTo.row();
-    int newY = draggedTo.column();
+void BoardModel::finishMove(int draggedFrom, int draggedTo) {
+    int oldX = draggedFrom % BOARD_SIZE;
+    int oldY = draggedFrom / BOARD_SIZE;
+    int newX = draggedTo % BOARD_SIZE;
+    int newY = draggedTo / BOARD_SIZE;
 
-    const Piece *piece = _data.at(draggedFrom);
-    bool result = piece->moves(oldX, oldY, newX, newY);
+    const Piece *pieceFrom = _data.at(Square(draggedFrom));
+    const Piece *pieceTo = _data.at(Square(draggedTo));
 
-    changeModel(result, draggedFrom, draggedTo);
+    //if(pieceFrom->color() != _activePlayer)
+        //return;
 
-    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1), 0);
+    if(pieceFrom->color() != pieceTo->color()) {
+        bool result = pieceFrom->moves(oldX, oldY, newX, newY);
+        changeModel(result, Square(draggedFrom), Square(draggedTo));
+    }
+
+    //_activePlayer = (WHITE_COLOR) ? BLACK_COLOR : WHITE_COLOR;
+
 }
 
-void BoardModel::changeModel(bool &result, Square &draggedFrom, Square &draggedTo) {
+void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) {
     const Piece *cur = _data.at(draggedFrom);
     if(result) {
         _data.remove(draggedTo);
         _data.remove(draggedFrom);
         _data.add(draggedTo, cur);
+        emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
     }
 }
 

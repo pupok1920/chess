@@ -8,6 +8,7 @@ public:
     BoardData();
     ~BoardData();
     void add(const Square &square, const Piece *piece);
+    void remove(const Square &square);
     const Piece *at(const Square &square) const;
 
     const Piece *pawn(PieceColor color) const;

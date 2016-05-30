@@ -14,7 +14,7 @@ QString Pawn::type() const {
     return "pawn";
 }
 
-bool Pawn::moves() const {
+bool Pawn::moves(int oldX, int oldY, int newX, int newY) const {
     if(abs(oldY - newY) != 1 || abs(oldX - newX) > 1)
         return false;
     else

@@ -19,17 +19,19 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
     void initialize();
 
-    Q_INVOKABLE void finishMove(Square &draggedFrom, Square &draggedTo);
+    Q_INVOKABLE void finishMove(int draggedFrom, int draggedTo);
 
 protected:
     QHash<int, QByteArray> roleNames() const;
 
-    void changeModel(bool &result, Square &draggedFrom, Square &draggedTo);
+    void changeModel(bool result, Square draggedFrom, Square draggedTo);
+
+private:
+    void initializeData(BoardData &data);
 
 private:
     BoardData _data;
-
-    void initializeData(BoardData &data);
+    PieceColor _activePlayer;
 };
 
 #endif // BOARDMODEL

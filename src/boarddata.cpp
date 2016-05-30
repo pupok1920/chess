@@ -15,6 +15,10 @@ void BoardData::add(const Square &square, const Piece *piece) {
     _data[square.index()] = piece;
 }
 
+void BoardData::remove(const Square &square) {
+    _data[square.index()] = 0;
+}
+
 const Piece *BoardData::at(const Square &square) const {
     return _data.at(square.index());
 }

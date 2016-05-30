@@ -82,6 +82,7 @@ ApplicationWindow {
           cellHeight: 60
           model: boardModel
           delegate: dndDelegate
+          //verticalLayoutDirection: GridView.BottomToTop
 
           //property int draggedItemIndex: -1
           property int draggedFrom: -1
@@ -106,7 +107,7 @@ ApplicationWindow {
               onReleased: {
                   view.draggedTo = view.indexAt(mouseX, mouseY)
 
-                  boardModel.finishMove(draggedFrom, draggedTo)
+                  boardModel.finishMove(view.draggedFrom, view.draggedTo)
                     /*if (view.draggedItemIndex != -1 &&
                             view.draggedItemIndex >= 0 &&
                             view.draggedItemIndex < view.count &&
