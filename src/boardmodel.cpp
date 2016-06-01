@@ -34,6 +34,15 @@ QVariant BoardModel::data(const QModelIndex &index, int role) const {
     }
 }
 
+bool BoardModel::getActivePlayer() const {
+    if(_activePlayer == WHITE_COLOR) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}
+
 void BoardModel::initialize() {
     initializeData(_data);
     _activePlayer = WHITE_COLOR;
@@ -56,6 +65,9 @@ void BoardModel::finishMove(int draggedFrom, int draggedTo) {
         bool result = pieceFrom->moves(oldX, oldY, newX, newY);
         changeModel(result, Square(draggedFrom), Square(draggedTo));
     }
+    else {
+        emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
+    }
 
     //_activePlayer = (WHITE_COLOR) ? BLACK_COLOR : WHITE_COLOR;
 
@@ -67,6 +79,10 @@ void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) 
         _data.remove(draggedTo);
         _data.remove(draggedFrom);
         _data.add(draggedTo, cur);
+        _activePlayer = (WHITE_COLOR) ? BLACK_COLOR : WHITE_COLOR;
+        emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
+    }
+    else {
         emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
     }
 }

@@ -30,6 +30,50 @@ ApplicationWindow {
           source: "qrc:/assets/board.jpg"
       }
 
+      Item {
+          id: indicItem
+          x: 20
+          y: 500
+
+          Rectangle {
+              id: indicRect
+              width: 35
+              height: 35
+              anchors.left: parent
+              border.color: "red"
+          }
+          Text {
+              id: indicText
+              text: "White move"
+              font.family: "Helvetica"
+              font.pointSize: 24
+              color: "black"
+          }
+
+          states: [
+              State {
+                  name: "WHITEMOVE"
+                  when: boardModel.getActivePlayer() == false
+                  PropertyChanges {
+                      target: indicRect; color: "white"
+                  }
+                  PropertyChanges {
+                      target: indicText; text: "white move"
+                  }
+              },
+              State {
+                  name: "BLACKMOVE"
+                  when: boardModel.getActivePlayer() == true
+                  PropertyChanges {
+                      target: indicRect; color: "black"
+                  }
+                  PropertyChanges {
+                      target: indicText; text: "black move"
+                  }
+              }
+          ]
+      }
+
       Component {
           id: dndDelegate
           Item {
