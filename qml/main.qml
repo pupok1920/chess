@@ -7,7 +7,7 @@ import QtQuick.Dialogs 1.1
 
 ApplicationWindow {
     id: applicationWindow
-    title: qsTr("QML Chess")
+    title: qsTr("NTG6: static_linking")
     width   : field.width
     height  : field.height
     visible : true
@@ -27,7 +27,7 @@ ApplicationWindow {
       Image {
           id: board
           anchors.fill: parent
-          source: "qrc:/assets/board.jpg"
+          //source: "qrc:/assets/board.jpg"
       }
 
       Item {
@@ -92,8 +92,8 @@ ApplicationWindow {
                   }
 
                   anchors.centerIn: parent
-                  smooth: true
-                  fillMode: Image.PreserveAspectFit
+                  //smooth: true
+                  //fillMode: Image.PreserveAspectFit
               }
 
               states: [
@@ -152,7 +152,7 @@ ApplicationWindow {
                   view.draggedTo = view.indexAt(mouseX, mouseY)
 
                   boardModel.finishMove(view.draggedFrom, view.draggedTo)
-                  boardModel.getActivePlayer()
+                  //boardModel.getActivePlayer()
                     /*if (view.draggedItemIndex != -1 &&
                             view.draggedItemIndex >= 0 &&
                             view.draggedItemIndex < view.count &&
