@@ -33,20 +33,20 @@ ApplicationWindow {
       Item {
           id: indicItem
           x: 20
-          y: 500
+          y: 485
 
           Rectangle {
               id: indicRect
-              width: 35
-              height: 35
-              anchors.left: parent
+              width: 30
+              height: 30
               border.color: "red"
+              x: 120
           }
           Text {
               id: indicText
-              text: "White move"
+              text: "Any move"
               font.family: "Helvetica"
-              font.pointSize: 24
+              font.pointSize: 20
               color: "black"
           }
 
@@ -152,6 +152,7 @@ ApplicationWindow {
                   view.draggedTo = view.indexAt(mouseX, mouseY)
 
                   boardModel.finishMove(view.draggedFrom, view.draggedTo)
+                  boardModel.getActivePlayer()
                     /*if (view.draggedItemIndex != -1 &&
                             view.draggedItemIndex >= 0 &&
                             view.draggedItemIndex < view.count &&

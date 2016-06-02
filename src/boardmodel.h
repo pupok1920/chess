@@ -21,6 +21,7 @@ public:
     void initialize();
 
     Q_INVOKABLE bool getActivePlayer() const;
+    Q_INVOKABLE void changeActivePlayer();
     Q_INVOKABLE void finishMove(int draggedFrom, int draggedTo);
 
 protected:

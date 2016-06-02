@@ -1,8 +1,7 @@
 #include "boardmodel.h"
 
 BoardModel::BoardModel(QObject *parent)
-    : QAbstractListModel(parent),
-    _activePlayer(WHITE_COLOR) {}
+    : QAbstractListModel(parent) {}
 
 BoardModel::~BoardModel(){}
 
@@ -43,6 +42,11 @@ bool BoardModel::getActivePlayer() const {
     }
 }
 
+void BoardModel::changeActivePlayer() {
+    _activePlayer = (WHITE_COLOR) ? BLACK_COLOR : WHITE_COLOR;
+    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
+}
+
 void BoardModel::initialize() {
     initializeData(_data);
     _activePlayer = WHITE_COLOR;
@@ -61,13 +65,14 @@ void BoardModel::finishMove(int draggedFrom, int draggedTo) {
     //if(pieceFrom->color() != _activePlayer)
         //return;
 
-    if(pieceFrom->color() != pieceTo->color()) {
-        bool result = pieceFrom->moves(oldX, oldY, newX, newY);
-        changeModel(result, Square(draggedFrom), Square(draggedTo));
+
+    changeModel(true, Square(draggedFrom), Square(draggedTo));
+    /*if(pieceFrom->color() != pieceTo->color()) {
+        //bool result = pieceFrom->moves(oldX, oldY, newX, newY);
     }
     else {
         emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
-    }
+    }*/
 
     //_activePlayer = (WHITE_COLOR) ? BLACK_COLOR : WHITE_COLOR;
 
@@ -79,7 +84,7 @@ void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) 
         _data.remove(draggedTo);
         _data.remove(draggedFrom);
         _data.add(draggedTo, cur);
-        _activePlayer = (WHITE_COLOR) ? BLACK_COLOR : WHITE_COLOR;
+        //_activePlayer = BLACK_COLOR;
         emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
     }
     else {
