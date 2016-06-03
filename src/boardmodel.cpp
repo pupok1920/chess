@@ -2,7 +2,8 @@
 
 BoardModel::BoardModel(QObject *parent)
     : QAbstractListModel(parent) {
-    connect(this, SIGNAL(activePlayerChanged()), this, SLOT(getActivePlayer()));
+    connect(this, SIGNAL(activePlayerChanged()),
+            this, SLOT(getActivePlayer()));
 }
 
 BoardModel::~BoardModel(){}
@@ -58,13 +59,15 @@ void BoardModel::finishMove(int draggedFrom, int draggedTo) {
 
     const Piece *pieceFrom = _data.at(Square(draggedFrom));
     const Piece *pieceTo = _data.at(Square(draggedTo));
-    bool result = pieceFrom->moves(oldX, oldY, newX, newY);
+    //bool result = pieceFrom->moves(oldX, oldY, newX, newY);
 
-    //if(pieceFrom->color() != _activePlayer)
+    if(pieceFrom != 0) {
+        bool result = pieceFrom->moves(oldX, oldY, newX, newY);
+        changeModel(result, Square(draggedFrom), Square(draggedTo));
+    }
         //return;
 
 
-    changeModel(result, Square(draggedFrom), Square(draggedTo));
     /*if(pieceFrom->color() != pieceTo->color()) {
         //bool result = pieceFrom->moves(oldX, oldY, newX, newY);
     }
@@ -83,10 +86,7 @@ void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) 
         _data.remove(draggedFrom);
         _data.add(draggedTo, cur);
         _activePlayer = (WHITE_COLOR) ? BLACK_COLOR : WHITE_COLOR;
-        emit activePlayerChanged();
-        emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
-    }
-    else {
+        //emit activePlayerChanged();
         emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
     }
 }

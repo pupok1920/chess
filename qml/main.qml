@@ -41,38 +41,41 @@ ApplicationWindow {
               height: 30
               border.color: "red"
               x: 120
+              //color: boardModel.getActivePlayer() ? "black" : "white"
           }
           Text {
               id: indicText
-              text: "Any move"
+              //text: boardModel.getActivePlayer() ? "I" : "Y"
               font.family: "Helvetica"
-              font.pointSize: 20
+              font.pointSize: 16
               color: "black"
           }
 
-          states: [
+          /*states: [
               State {
                   name: "WHITEMOVE"
-                  when: boardModel.getActivePlayer() == false
+                  when: boardModel.getActivePlayer() === false
                   PropertyChanges {
                       target: indicRect; color: "white"
                   }
                   PropertyChanges {
-                      target: indicText; text: "white move"
+                      target: indicText; text: ""
                   }
               },
               State {
                   name: "BLACKMOVE"
-                  when: boardModel.getActivePlayer() == true
+                  when: boardModel.getActivePlayer() === true
                   PropertyChanges {
                       target: indicRect; color: "black"
                   }
                   PropertyChanges {
-                      target: indicText; text: "black move"
+                      target: indicText; text: ""
                   }
               }
-          ]
+          ] */
       }
+
+
 
       Component {
           id: dndDelegate
@@ -112,6 +115,26 @@ ApplicationWindow {
                       PropertyChanges {
                           target: itemImage; y: coords.mouseY - itemImage.height / 2
                       }
+                  },
+                  State {
+                      name: "WHITEMOVE"
+                      when: boardModel.getActivePlayer() === false
+                      PropertyChanges {
+                          target: indicRect; color: "white"
+                      }
+                      PropertyChanges {
+                          target: indicText; text: ""
+                      }
+                  },
+                  State {
+                      name: "BLACKMOVE"
+                      when: boardModel.getActivePlayer() === true
+                      PropertyChanges {
+                          target: indicRect; color: "black"
+                      }
+                      PropertyChanges {
+                          target: indicText; text: ""
+                      }
                   }
               ]
           }
@@ -139,6 +162,7 @@ ApplicationWindow {
               anchors.fill: parent
           }
 
+
           MouseArea {
               id: coords
               anchors.fill: parent
@@ -151,17 +175,10 @@ ApplicationWindow {
               onReleased: {
                   view.draggedTo = view.indexAt(mouseX, mouseY)
 
-                  boardModel.finishMove(view.draggedFrom, view.draggedTo)
                   //boardModel.getActivePlayer()
-                    /*if (view.draggedItemIndex != -1 &&
-                            view.draggedItemIndex >= 0 &&
-                            view.draggedItemIndex < view.count &&
-                            view.draggedItemIndex != view.indexAt(mouseX, mouseY)
-                            ) {
-                        var sss = view.model.get(view.draggedItemIndex).source
-                        view.model.set(view.indexAt(mouseX, mouseY), {"source":sss})
-                        view.model.set(view.draggedItemIndex, {"source":""})
-                    }*/
+                  if (view.draggedFrom !== view.draggedTo) {
+                      boardModel.finishMove(view.draggedFrom, view.draggedTo)
+                  }
               }
           }
        }
