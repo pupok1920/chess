@@ -4,6 +4,7 @@ import QtQuick.Window 2.2
 import QtMultimedia 5.5
 import QtQml.Models 2.2
 import QtQuick.Dialogs 1.1
+import Qt.labs.settings 1.0
 
 ApplicationWindow {
     id: applicationWindow
@@ -41,11 +42,11 @@ ApplicationWindow {
               height: 30
               border.color: "red"
               x: 120
-              //color: boardModel.getActivePlayer() ? "black" : "white"
+              color: (boardModel.getActivePlayer()===0) ? "black" : "white"
           }
           Text {
               id: indicText
-              //text: boardModel.getActivePlayer() ? "I" : "Y"
+              text: toString(boardModel.getActivePlayer())
               font.family: "Helvetica"
               font.pointSize: 16
               color: "black"
@@ -115,7 +116,7 @@ ApplicationWindow {
                       PropertyChanges {
                           target: itemImage; y: coords.mouseY - itemImage.height / 2
                       }
-                  },
+                  }/*,
                   State {
                       name: "WHITEMOVE"
                       when: boardModel.getActivePlayer() === false
@@ -135,7 +136,7 @@ ApplicationWindow {
                       PropertyChanges {
                           target: indicText; text: ""
                       }
-                  }
+                  }*/
               ]
           }
       }

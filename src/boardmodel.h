@@ -26,7 +26,7 @@ signals:
     void activePlayerChanged();
 
 public slots:
-    bool getActivePlayer() const;
+    int getActivePlayer() const;
 
 protected:
     QHash<int, QByteArray> roleNames() const;
