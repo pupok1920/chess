@@ -35,45 +35,46 @@ ApplicationWindow {
           id: indicItem
           x: 20
           y: 485
+          property bool activePlayer: boardModel.activePlayer
 
           Rectangle {
               id: indicRect
               width: 30
               height: 30
               border.color: "red"
-              x: 120
-              color: (boardModel.getActivePlayer()===0) ? "black" : "white"
+              x: 195
+              //color: (boardModel.getActivePlayer()===0) ? "black" : "white"
           }
           Text {
               id: indicText
-              text: toString(boardModel.getActivePlayer())
+              //text: toString(boardModel.getActivePlayer())
               font.family: "Helvetica"
-              font.pointSize: 16
+              font.pointSize: 12
               color: "black"
           }
 
-          /*states: [
+          states: [
               State {
                   name: "WHITEMOVE"
-                  when: boardModel.getActivePlayer() === false
+                  when: indicItem.activePlayer == true
                   PropertyChanges {
                       target: indicRect; color: "white"
                   }
                   PropertyChanges {
-                      target: indicText; text: ""
+                      target: indicText; text: "waiting for NTG6..."
                   }
               },
               State {
                   name: "BLACKMOVE"
-                  when: boardModel.getActivePlayer() === true
+                  when: indicItem.activePlayer == false
                   PropertyChanges {
                       target: indicRect; color: "black"
                   }
                   PropertyChanges {
-                      target: indicText; text: ""
+                      target: indicText; text: "connecting if1moc..."
                   }
               }
-          ] */
+          ]
       }
 
 

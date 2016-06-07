@@ -11,12 +11,16 @@ class BoardModel: public QAbstractListModel {
         ItemColorRole
     };
 
+    Q_PROPERTY(bool activePlayer READ activePlayer NOTIFY activePlayerChanged)
+
 public:
     explicit BoardModel(QObject *parent = 0);
     ~BoardModel();
 
+
     int rowCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role) const;
+    bool activePlayer() const;
 
     void initialize();
 
@@ -24,9 +28,6 @@ public:
 
 signals:
     void activePlayerChanged();
-
-public slots:
-    int getActivePlayer() const;
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -38,7 +39,7 @@ private:
 
 private:
     BoardData _data;
-    PieceColor _activePlayer;
+    PieceColor  _activePlayer;
 };
 
 #endif // BOARDMODEL

@@ -2,8 +2,8 @@
 
 BoardModel::BoardModel(QObject *parent)
     : QAbstractListModel(parent) {
-    connect(this, SIGNAL(activePlayerChanged()),
-            this, SLOT(getActivePlayer()));
+    //connect(this, SIGNAL(activePlayerChanged()),
+           // this, SLOT(getActivePlayer()));
 }
 
 BoardModel::~BoardModel(){}
@@ -36,14 +36,14 @@ QVariant BoardModel::data(const QModelIndex &index, int role) const {
     }
 }
 
-int BoardModel::getActivePlayer() const {
+bool BoardModel::activePlayer() const {
     //return _activePlayer;
 
     if(_activePlayer == WHITE_COLOR) {
-        return 1;
+        return true;
     }
     else {
-        return 0;
+        return false;
     }
 }
 
@@ -89,8 +89,9 @@ void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) 
         _data.remove(draggedTo);
         _data.remove(draggedFrom);
         _data.add(draggedTo, cur);
+        //_activePlayer = (false) ? true : false;
         _activePlayer = (WHITE_COLOR) ? BLACK_COLOR : WHITE_COLOR;
-        //emit activePlayerChanged();
+        emit activePlayerChanged();
         emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
     }
 }
