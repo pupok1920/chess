@@ -60,20 +60,22 @@ void BoardModel::finishMove(int draggedFrom, int draggedTo) {
     int newY = draggedTo / BOARD_SIZE;
 
     const Piece *pieceFrom = _data.at(Square(draggedFrom));
+    
     const Piece *pieceTo = _data.at(Square(draggedTo));
     //bool result = pieceFrom->moves(oldX, oldY, newX, newY);
 
-    if(pieceFrom != 0) {
-        if((_activePlayer == true && pieceFrom->color() == WHITE_COLOR)
-                || (_activePlayer == false && pieceFrom->color() == BLACK_COLOR)) {
-            if(pieceTo == 0 || pieceFrom->color() != pieceTo->color()) {
-                bool result = pieceFrom->moves(oldX, oldY, newX, newY);
-                changeModel(result, Square(draggedFrom), Square(draggedTo));
-            }
-        }
-    }
-        //return;
+    if(pieceFrom == 0) return; 
+    
+    if((_activePlayer == true && pieceFrom->color() != WHITE_COLOR)
+            || (_activePlayer == false && pieceFrom->color() != BLACK_COLOR)) return;
 
+    if(pieceTo == 0 || pieceFrom->color() != pieceTo->color()) 
+    {
+      bool result = pieceFrom->moves(oldX, oldY, newX, newY);
+      changeModel(result, Square(draggedFrom), Square(draggedTo));
+    }
+    
+    //return;
 
     /*if(pieceFrom->color() != pieceTo->color()) {
         //bool result = pieceFrom->moves(oldX, oldY, newX, newY);

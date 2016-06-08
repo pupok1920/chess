@@ -3,15 +3,18 @@
 #include <cstdlib>
 #include "square.h"
 
+
 class Piece {
 public:
     virtual ~Piece();
     virtual PieceColor color() const = 0;
     virtual QString type() const = 0;
     virtual bool moves(int oldX, int oldY, int newX, int newY) const = 0;
-};
 
-typedef std::vector<const Piece *> Pieces;
+    //see "mayers. more effective c++".
+    Piece operator = (Piece const&) = delete;
+    Piece(Piece&) = delete;
+};
 
 class PieceBase: public Piece {
 public:
@@ -26,7 +29,7 @@ class Pawn: public PieceBase {
 public:
     explicit Pawn(PieceColor color);
     QString type() const;
-    bool moves(int oldX, int oldY, int newX, int newY) const;
+    bool moves(int oldX, int oldY, int newX, int newY) const overide;
 };
 
 class Rook: public PieceBase {

@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include "pieces.h"
 
+
 class BoardData {
 public:
     BoardData();
@@ -20,7 +21,10 @@ public:
 
 private:
     Q_DISABLE_COPY(BoardData)
+
+    typedef std::vector<const Piece *> Pieces;
     Pieces _data;
+
     Pawn _whitePawn;
     Pawn _blackPawn;
     Rook _whiteRook;
