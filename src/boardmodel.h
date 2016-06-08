@@ -39,7 +39,7 @@ private:
 
 private:
     BoardData _data;
-    PieceColor  _activePlayer;
+    bool  _activePlayer;
 };
 
 #endif // BOARDMODEL

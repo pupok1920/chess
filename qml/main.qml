@@ -42,7 +42,7 @@ ApplicationWindow {
               width: 30
               height: 30
               border.color: "red"
-              x: 195
+              x: 145
               //color: (boardModel.getActivePlayer()===0) ? "black" : "white"
           }
           Text {
@@ -51,6 +51,7 @@ ApplicationWindow {
               font.family: "Helvetica"
               font.pointSize: 12
               color: "black"
+              y: 5
           }
 
           states: [
@@ -181,6 +182,7 @@ ApplicationWindow {
                   if (view.draggedFrom !== view.draggedTo) {
                       boardModel.finishMove(view.draggedFrom, view.draggedTo)
                   }
+                  view.draggedFrom = -1
               }
           }
        }
