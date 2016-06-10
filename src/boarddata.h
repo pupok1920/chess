@@ -1,5 +1,5 @@
-#ifndef BOARDDATA
-#define BOARDDATA
+#ifndef __BOARDDATANJGDNBSLNDSGNBDJKNBDNBDGKJBNDKJF__
+#define __BOARDDATANJGDNBSLNDSGNBDJKNBDNBDGKJBNDKJF__
 #include <QCoreApplication>
 #include "pieces.h"
 
@@ -39,5 +39,5 @@ private:
     King _blackKing;
 };
 
-#endif // BOARDDATA
+#endif // __BOARDDATANJGDNBSLNDSGNBDJKNBDNBDGKJBNDKJF__
 

@@ -49,11 +49,10 @@ bool BoardModel::activePlayer() const {
 
 void BoardModel::initialize() {
     initializeData(_data);
-    _activePlayer = true;
-    //emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
+    _activePlayer = true; 
 }
 
-void BoardModel::finishMove(int draggedFrom, int draggedTo) {
+void BoardModel::move(int draggedFrom, int draggedTo) {
     int oldX = draggedFrom % BOARD_SIZE;
     int oldY = draggedFrom / BOARD_SIZE;
     int newX = draggedTo % BOARD_SIZE;
@@ -61,31 +60,22 @@ void BoardModel::finishMove(int draggedFrom, int draggedTo) {
 
     const Piece *pieceFrom = _data.at(Square(draggedFrom));
     
-    const Piece *pieceTo = _data.at(Square(draggedTo));
-    //bool result = pieceFrom->moves(oldX, oldY, newX, newY);
-
     if(pieceFrom == 0) return; 
     
     if((_activePlayer == true && pieceFrom->color() != WHITE_COLOR)
             || (_activePlayer == false && pieceFrom->color() != BLACK_COLOR)) return;
-
-    if(pieceTo == 0 || pieceFrom->color() != pieceTo->color()) 
-    {
-      bool result = pieceFrom->moves(oldX, oldY, newX, newY);
-      changeModel(result, Square(draggedFrom), Square(draggedTo));
-    }
     
-    //return;
+    const Piece *pieceTo = _data.at(Square(draggedTo));
 
-    /*if(pieceFrom->color() != pieceTo->color()) {
-        //bool result = pieceFrom->moves(oldX, oldY, newX, newY);
-    }
-    else {
-        emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
-    }*/
+    if(pieceTo == 0 || pieceFrom->color() != pieceTo->color()) {
+	int oldX = draggedFrom % BOARD_SIZE;
+	int oldY = draggedFrom / BOARD_SIZE;
+	int newX = draggedTo % BOARD_SIZE;
+	int newY = draggedTo / BOARD_SIZE;
 
-    //_activePlayer = (WHITE_COLOR) ? BLACK_COLOR : WHITE_COLOR;
-
+	bool result = pieceFrom->isMoveValid(oldX, oldY, newX, newY);
+	changeModel(result, Square(draggedFrom), Square(draggedTo));
+    }    
 }
 
 void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) {
@@ -104,7 +94,7 @@ void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) 
             _activePlayer = false;
             emit activePlayerChanged();
         }
-        //emit activePlayerChanged();
+        
         emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
     }
 }

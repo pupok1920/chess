@@ -43,11 +43,9 @@ ApplicationWindow {
               height: 30
               border.color: "red"
               x: 145
-              //color: (boardModel.getActivePlayer()===0) ? "black" : "white"
           }
           Text {
               id: indicText
-              //text: toString(boardModel.getActivePlayer())
               font.family: "Helvetica"
               font.pointSize: 12
               color: "black"
@@ -118,28 +116,8 @@ ApplicationWindow {
                       PropertyChanges {
                           target: itemImage; y: coords.mouseY - itemImage.height / 2
                       }
-                  }/*,
-                  State {
-                      name: "WHITEMOVE"
-                      when: boardModel.getActivePlayer() === false
-                      PropertyChanges {
-                          target: indicRect; color: "white"
-                      }
-                      PropertyChanges {
-                          target: indicText; text: ""
-                      }
-                  },
-                  State {
-                      name: "BLACKMOVE"
-                      when: boardModel.getActivePlayer() === true
-                      PropertyChanges {
-                          target: indicRect; color: "black"
-                      }
-                      PropertyChanges {
-                          target: indicText; text: ""
-                      }
-                  }*/
-              ]
+                  }
+	     ]
           }
       }
 
@@ -153,8 +131,7 @@ ApplicationWindow {
           model: boardModel
           delegate: dndDelegate
           //verticalLayoutDirection: GridView.BottomToTop
-
-          //property int draggedItemIndex: -1
+          
           property int draggedFrom: -1
           property int draggedTo: -1
 
@@ -171,16 +148,14 @@ ApplicationWindow {
               anchors.fill: parent
 
               onPressed: {
-                    //view.draggedItemIndex = view.indexAt(mouseX, mouseY)
                   view.draggedFrom = view.indexAt(mouseX, mouseY)
               }
 
               onReleased: {
                   view.draggedTo = view.indexAt(mouseX, mouseY)
 
-                  //boardModel.getActivePlayer()
                   if (view.draggedFrom !== view.draggedTo) {
-                      boardModel.finishMove(view.draggedFrom, view.draggedTo)
+                      boardModel.move(view.draggedFrom, view.draggedTo)
                   }
                   view.draggedFrom = -1
               }

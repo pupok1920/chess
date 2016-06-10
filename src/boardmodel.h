@@ -1,5 +1,5 @@
-#ifndef BOARDMODEL
-#define BOARDMODEL
+#ifndef __BOARDMODELNJNBDJBNDLBNDLBNDKBNDKBNDKL__
+#define __BOARDMODELNJNBDJBNDLBNDLBNDKBNDKBNDKL__
 #include <QAbstractListModel>
 #include "boarddata.h"
 
@@ -18,13 +18,13 @@ public:
     ~BoardModel();
 
 
-    int rowCount(const QModelIndex &parent) const;
-    QVariant data(const QModelIndex &index, int role) const;
+    int rowCount(const QModelIndex &parent) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
     bool activePlayer() const;
 
     void initialize();
 
-    Q_INVOKABLE void finishMove(int draggedFrom, int draggedTo);
+    Q_INVOKABLE void move(int draggedFrom, int draggedTo);
 
 signals:
     void activePlayerChanged();
@@ -42,5 +42,4 @@ private:
     bool  _activePlayer;
 };
 
-#endif // BOARDMODEL
-
+#endif // __BOARDMODELNJNBDJBNDLBNDLBNDKBNDKBNDKL__
