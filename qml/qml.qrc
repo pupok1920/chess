@@ -14,5 +14,7 @@
         <file>assets/knight_white.png</file>
         <file>assets/pawn_black.png</file>
         <file>assets/pawn_white.png</file>
+        <file>PlayView.qml</file>
+        <file>Board.qml</file>
     </qresource>
 </RCC>

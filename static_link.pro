@@ -18,6 +18,3 @@ HEADERS += \
     src/pieces.h \
     src/boarddata.h \
     src/boardmodel.h \
-
-
-
