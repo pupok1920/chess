@@ -39,10 +39,60 @@ ApplicationWindow {
             }
         }
 
+	StackView {
+	    delegate: StackViewDelegate {
+		function transitionFinished(properties) {
+		    properties.exitItem.opacity = 1
+		}
+
+		pushTransition: StackViewTransition {
+		    PropertyAnimation {
+			target: enterItem
+			property: "opacity"
+			from: 0
+			to: 1
+		    }
+		    PropertyAnimation {
+			target: exitItem
+			property: "opacity"
+			from: 1
+			to: 0
+		    }
+		}
+	    }
+	}
+
+        Connections {
+            target: homeView
+            onPlayClicked: {
+                stackView.push(playViewForm)
+		playView.initialise()
+            }
+            onLoadClicked: {
+                loadFileDialog.visible = true
+            }
+        }
         Connections {
             target: playView
+            onStopClicked: {
+                stackView.pop()
+		homeView.initialise()
+            }
             onSaveClicked: {
                 saveFileDialog.visible = true
+            }
+        }
+        Connections {
+            target: replayView
+            onHomeClicked: {
+                stackView.push({ item: homeViewForm, replace: true})
+		homeView.initialise()
+            }
+            onRedoClicked: {
+                boardModel.redo()
+            }
+            onUndoClicked: {
+                boardModel.undo()
             }
         }
     }
