@@ -17,12 +17,14 @@ Item {
 
     Button {
 	id: playButton
+	text: "connect.."
 	tooltip: qsTr("play")
 	//iconSource: 
 	onClicked: parent.playClicked()
     }
     Button {
 	id: loadButton
+	text: "log.."
 	tooltip: qsTr("load")
 	//iconSource: 
 	onClicked: parent.loadClicked()

@@ -87,7 +87,7 @@ Item {
 
     Item {
         id: indicItem
-        x: 20
+        x: 15
         y: 485
         property bool activePlayer: boardModel.activePlayer
 
@@ -96,7 +96,7 @@ Item {
             width: 30
             height: 30
             border.color: "red"
-            x: 145
+            x: 140
         }
         Text {
             id: indicText

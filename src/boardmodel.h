@@ -1,6 +1,12 @@
 #ifndef __BOARDMODELNJNBDJBNDLBNDLBNDKBNDKBNDKL__
 #define __BOARDMODELNJNBDJBNDLBNDLBNDKBNDKBNDKL__
 #include <QAbstractListModel>
+#include <QFile>
+#include <QTextStream>
+#include <utility>
+#include <fstream>
+#include <string>
+#include <sstream>
 #include "boarddata.h"
 
 class BoardModel: public QAbstractListModel {
@@ -25,6 +31,7 @@ public:
     void initialize();
 
     Q_INVOKABLE void move(int draggedFrom, int draggedTo);
+    Q_INVOKABLE void save(const QString  &fileUrl);
 
 signals:
     void activePlayerChanged();
@@ -38,6 +45,14 @@ private:
     void initializeData(BoardData &data);
 
 private:
+    typedef std::pair<int, int> Move;
+    typedef std::vector<Move> Moves;
+    //typedef std::vector<QString> StringMoves;
+    Moves _moves;
+    /*StringMoves _stringMoves;
+    typedef std::vector<int> Move;
+    Move _move;*/
+
     BoardData _data;
     bool  _activePlayer;
 };

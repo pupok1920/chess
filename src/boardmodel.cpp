@@ -75,6 +75,8 @@ void BoardModel::move(int draggedFrom, int draggedTo) {
 
 	bool result = pieceFrom->isMoveValid(oldX, oldY, newX, newY);
 	changeModel(result, Square(draggedFrom), Square(draggedTo));
+    _move.push_back(draggedFrom, draggedTo);
+    //_moves.push_back(std::make_pair(draggedFrom, draggedTo));
     }    
 }
 
@@ -97,6 +99,30 @@ void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) 
         
         emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
     }
+}
+
+void BoardModel::save(const QString &fileUrl) {
+    /*std::ofstream fout(fileUrl, ios_base::out);
+    if(!fout.is_open()) return;
+
+    fout << _moves;
+    fout.close();*/
+
+    /*QFile file(fileUrl);
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+	return;
+
+    QTextStream out(&file);
+    //for (std::vector<Move>::iterator iter = _moves.begin();
+	iter != _moves.end(); iter++){
+	out << *iter;
+    }//
+    for(unsigned i=0; i<_moves.size(); ++i) {
+        _stringMoves[i] = _moves[i];
+    }
+    //_stringMoves = QString(_moves);
+    out << _stringMoves;
+    file.close();*/
 }
 
 QHash<int, QByteArray> BoardModel::roleNames() const{

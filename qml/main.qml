@@ -23,19 +23,27 @@ ApplicationWindow {
         property var homeViewForm: HomeView {
             id: homeView
         }
-        property var playViewForm: playView {
+        property var playViewForm: PlayView {
             id: playView
         }
-        property var replayViewForm: replayView {
+        property var replayViewForm: ReplayView {
             id: replayView
         }
 
         FileDialog {
             id: saveFileDialog
-            title: "Please make your choose"
+            title: "Please make your choose for save NTG6 data"
 
             onAccepted: {
                 boardModel.save(saveFileDialog.fileUrl)
+            }
+        }
+        FileDialog {
+            id: loadFileDialog
+            title: "Please make your choose for load NTG6 data"
+
+            onAccepted: {
+                boardModel.load(loadFileDialog.fileUrl)
             }
         }
 
