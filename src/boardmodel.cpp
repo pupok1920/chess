@@ -75,8 +75,8 @@ void BoardModel::move(int draggedFrom, int draggedTo) {
 
 	bool result = pieceFrom->isMoveValid(oldX, oldY, newX, newY);
 	changeModel(result, Square(draggedFrom), Square(draggedTo));
-    _move.push_back(draggedFrom, draggedTo);
-    //_moves.push_back(std::make_pair(draggedFrom, draggedTo));
+    _moves.push_back(QPair(QByteArray(draggedFrom),QByteArray (draggedTo)));
+    //_moves.push_back(std::make_pair(QByteArray(draggedFrom),QByteArray (draggedTo)));
     }    
 }
 
@@ -108,21 +108,26 @@ void BoardModel::save(const QString &fileUrl) {
     fout << _moves;
     fout.close();*/
 
-    /*QFile file(fileUrl);
-    if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
-	return;
+    QFile file(fileUrl);
+    if(file.open(QFile::WriteOnly | QFile::Text)) {
+        //file << _moves;
+        //QString str_moves = QVariant(_moves).toString();
+        QTextStream out(&file);
+        out << _moves;
+        /*for (std::vector<Move>::iterator iter = _moves.begin();
+            iter != _moves.end(); iter++){
+            out << *iter;
+        }*/
+    }
 
-    QTextStream out(&file);
-    //for (std::vector<Move>::iterator iter = _moves.begin();
-	iter != _moves.end(); iter++){
-	out << *iter;
-    }//
-    for(unsigned i=0; i<_moves.size(); ++i) {
+
+    //
+    /*for(unsigned i=0; i<_moves.size(); ++i) {
         _stringMoves[i] = _moves[i];
     }
     //_stringMoves = QString(_moves);
-    out << _stringMoves;
-    file.close();*/
+    out << _stringMoves;*/
+    file.close();
 }
 
 QHash<int, QByteArray> BoardModel::roleNames() const{

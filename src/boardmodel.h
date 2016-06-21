@@ -3,6 +3,8 @@
 #include <QAbstractListModel>
 #include <QFile>
 #include <QTextStream>
+#include <QPair>
+#include <QVector>
 #include <utility>
 #include <fstream>
 #include <string>
@@ -45,9 +47,11 @@ private:
     void initializeData(BoardData &data);
 
 private:
-    typedef std::pair<int, int> Move;
-    typedef std::vector<Move> Moves;
+    //typedef std::pair<QByteArray, QByteArray> Move;
+    //typedef std::vector<Move> Moves;
     //typedef std::vector<QString> StringMoves;
+    QPair<QByteArray, QByteArray> Move;
+    QVector<Move> Moves;
     Moves _moves;
     /*StringMoves _stringMoves;
     typedef std::vector<int> Move;
