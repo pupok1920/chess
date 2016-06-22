@@ -11,26 +11,28 @@ Item {
     signal redoClicked
     signal undoClicked
 
-    Board {}
-    Button {
-	id: homeButton
-	text: "home of NTG6"
-	anchors: {top: board.bottom, right: board.right}
-	onClicked: parent.homeClicked
+    Board {
+        id: board
     }
     Button {
-	id: redoButton
-	text: "next to NTG6"
-	anchors: {top: board.bottom, right: homeButton.left}
-	onClicked: parent.redoClicked
+        id: homeButton
+        text: "home of NTG6"
+        //anchors: {top: board.bottom; right: board.right}
+        onClicked: parent.homeClicked()
     }
     Button {
-	id: undoButton
-	text: "back to NTG6"
-	anchors: {top: board.bottom, right: redoButton.left}
-	onClicked: parent.undoClicked
+        id: redoButton
+        text: "next to NTG6"
+        //anchors: {top: board.bottom; right: homeButton.left}
+        onClicked: parent.redoClicked()
+    }
+    Button {
+        id: undoButton
+        text: "back to NTG6"
+        //anchors: {top: board.bottom; right: redoButton.left}
+        onClicked: parent.undoClicked()
     }
     function initialise() {
-	boardModel.initialise()
+        boardModel.initialise()
     }
 }

@@ -47,8 +47,8 @@ bool BoardModel::activePlayer() const {
     }*/
 }
 
-void BoardModel::initialize() {
-    initializeData(_data);
+void BoardModel::initialise() {
+    initialiseData(_data);
     _activePlayer = true; 
 }
 
@@ -75,7 +75,10 @@ void BoardModel::move(int draggedFrom, int draggedTo) {
 
 	bool result = pieceFrom->isMoveValid(oldX, oldY, newX, newY);
 	changeModel(result, Square(draggedFrom), Square(draggedTo));
-    _moves.push_back(QPair(QByteArray(draggedFrom),QByteArray (draggedTo)));
+    /*QByteArray baDraggedFrom = QByteArray(draggedFrom);
+    QByteArray baDraggedTo = QByteArray(draggedTo);
+    Move(baDraggedFrom, baDraggedTo);*/
+    _moves="draggedFrom, draggedTo";
     //_moves.push_back(std::make_pair(QByteArray(draggedFrom),QByteArray (draggedTo)));
     }    
 }
@@ -137,7 +140,7 @@ QHash<int, QByteArray> BoardModel::roleNames() const{
     return roles;
 }
 
-void BoardModel::initializeData(BoardData &data) {
+void BoardModel::initialiseData(BoardData &data) {
     for(unsigned i = 0; i < BOARD_SIZE; ++i) {
         data.add(Square(6, i), data.pawn(WHITE_COLOR));
         data.add(Square(1, i), data.pawn(BLACK_COLOR));

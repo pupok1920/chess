@@ -3,7 +3,7 @@ import QtQuick 2.0
 Item {
 
     Image {
-        id: board
+        id: boardImage
         anchors.fill: parent
         //source: "qrc:/assets/board.jpg"
     }
@@ -87,7 +87,7 @@ Item {
 
     Item {
         id: indicItem
-        x: 15
+        x: 20
         y: 485
         property bool activePlayer: boardModel.activePlayer
 
@@ -96,7 +96,7 @@ Item {
             width: 30
             height: 30
             border.color: "red"
-            x: 140
+            x: 145
         }
         Text {
             id: indicText

@@ -6,27 +6,36 @@ Item {
     signal loadClicked
 
     Rectangle {
-	width: 480
-	height: 480
-	color: "white"
+        id: startUpImage
+        width: 480
+        height: 480
+        color: "black"
 
-	/*Image {
-	    source:
-	}*/
+        /*Image {
+            source:
+        }*/
     }
 
     Button {
-	id: playButton
-	text: "connect.."
-	tooltip: qsTr("play")
-	//iconSource: 
-	onClicked: parent.playClicked()
+        id: playButton
+        text: "connect.."
+        tooltip: qsTr("play")
+        x: 40
+        y: 485
+        //anchors.top: startUpImage.bottom
+        //anchors.left: loadButton.left
+        //iconSource:
+        onClicked: parent.playClicked()
     }
     Button {
-	id: loadButton
-	text: "log.."
-	tooltip: qsTr("load")
-	//iconSource: 
-	onClicked: parent.loadClicked()
+        id: loadButton
+        text: "log.."
+        tooltip: qsTr("load")
+        x: 140
+        y: 485
+        //anchors.top: startUpImage.bottom
+        //anchors.left: startUpImage.right
+        //iconSource:
+        onClicked: parent.loadClicked()
     }
 }

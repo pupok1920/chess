@@ -9,8 +9,8 @@ import Qt.labs.settings 1.0
 ApplicationWindow {
     id: applicationWindow
     title: qsTr("NTG6: static_linking")
-    width   : field.width
-    height  : field.height
+    //width   : field.width
+    //height  : field.height
     visible : true
 
     minimumWidth : 480
@@ -20,6 +20,8 @@ ApplicationWindow {
     maximumHeight : 520
 
     Item {
+        id: mainContainer
+
         property var homeViewForm: HomeView {
             id: homeView
         }
@@ -48,43 +50,45 @@ ApplicationWindow {
         }
 
 	StackView {
+        id: stackView
+        initialItem: parent.homeViewForm
 	    delegate: StackViewDelegate {
-		function transitionFinished(properties) {
-		    properties.exitItem.opacity = 1
-		}
+            function transitionFinished(properties) {
+                properties.exitItem.opacity = 1
+            }
 
-		pushTransition: StackViewTransition {
-		    PropertyAnimation {
-			target: enterItem
-			property: "opacity"
-			from: 0
-			to: 1
-		    }
-		    PropertyAnimation {
-			target: exitItem
-			property: "opacity"
-			from: 1
-			to: 0
-		    }
-		}
+            pushTransition: StackViewTransition {
+                PropertyAnimation {
+                    target: enterItem
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                }
+                PropertyAnimation {
+                    target: exitItem
+                    property: "opacity"
+                    from: 1
+                    to: 0
+                }
+            }
 	    }
 	}
 
         Connections {
             target: homeView
             onPlayClicked: {
-                stackView.push(playViewForm)
-		playView.initialise()
+                stackView.push(mainContainer.playViewForm)
+                playView.initialise()
             }
             onLoadClicked: {
-                loadFileDialog.visible = true
+                loadFileDialog.open()
             }
         }
         Connections {
             target: playView
             onStopClicked: {
                 stackView.pop()
-		homeView.initialise()
+                //homeView.initialise()
             }
             onSaveClicked: {
                 saveFileDialog.visible = true
@@ -93,8 +97,8 @@ ApplicationWindow {
         Connections {
             target: replayView
             onHomeClicked: {
-                stackView.push({ item: homeViewForm, replace: true})
-		homeView.initialise()
+                stackView.push({ item: mainContainer.homeViewForm, replace: true})
+                homeView.initialise()
             }
             onRedoClicked: {
                 boardModel.redo()

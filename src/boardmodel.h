@@ -30,7 +30,7 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
     bool activePlayer() const;
 
-    void initialize();
+    Q_INVOKABLE void initialise();
 
     Q_INVOKABLE void move(int draggedFrom, int draggedTo);
     Q_INVOKABLE void save(const QString  &fileUrl);
@@ -44,15 +44,16 @@ protected:
     void changeModel(bool result, Square draggedFrom, Square draggedTo);
 
 private:
-    void initializeData(BoardData &data);
+    void initialiseData(BoardData &data);
 
 private:
     //typedef std::pair<QByteArray, QByteArray> Move;
     //typedef std::vector<Move> Moves;
     //typedef std::vector<QString> StringMoves;
-    QPair<QByteArray, QByteArray> Move;
-    QVector<Move> Moves;
-    Moves _moves;
+    //QPair<QByteArray, QByteArray> Move;
+    //QVector<Move> Moves;
+    QString _moves;
+    //Moves _moves;
     /*StringMoves _stringMoves;
     typedef std::vector<int> Move;
     Move _move;*/
