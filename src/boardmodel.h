@@ -5,6 +5,7 @@
 #include <QTextStream>
 #include <QPair>
 #include <QVector>
+#include <QDebug>
 #include <utility>
 #include <fstream>
 #include <string>
@@ -33,14 +34,14 @@ public:
     Q_INVOKABLE void initialise();
 
     Q_INVOKABLE void move(int draggedFrom, int draggedTo);
-    Q_INVOKABLE void save(const QString  &fileUrl);
+    Q_INVOKABLE void save(const QString  &fileName);
 
 signals:
     void activePlayerChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
-
+    QString cutFileName(const QString &fileName) const;
     void changeModel(bool result, Square draggedFrom, Square draggedTo);
 
 private:
@@ -50,9 +51,9 @@ private:
     //typedef std::pair<QByteArray, QByteArray> Move;
     //typedef std::vector<Move> Moves;
     //typedef std::vector<QString> StringMoves;
-    //QPair<QByteArray, QByteArray> Move;
-    //QVector<Move> Moves;
-    QString _moves;
+    //QPair<QByteArray, QByteArray> _move;
+    QVector<QPair<int, int> > _moves;
+    //*//////QList<int> _moves;
     //Moves _moves;
     /*StringMoves _stringMoves;
     typedef std::vector<int> Move;

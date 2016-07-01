@@ -53,10 +53,10 @@ void BoardModel::initialise() {
 }
 
 void BoardModel::move(int draggedFrom, int draggedTo) {
-    int oldX = draggedFrom % BOARD_SIZE;
+    /*int oldX = draggedFrom % BOARD_SIZE;
     int oldY = draggedFrom / BOARD_SIZE;
     int newX = draggedTo % BOARD_SIZE;
-    int newY = draggedTo / BOARD_SIZE;
+    int newY = draggedTo / BOARD_SIZE;*/
 
     const Piece *pieceFrom = _data.at(Square(draggedFrom));
     
@@ -78,8 +78,10 @@ void BoardModel::move(int draggedFrom, int draggedTo) {
     /*QByteArray baDraggedFrom = QByteArray(draggedFrom);
     QByteArray baDraggedTo = QByteArray(draggedTo);
     Move(baDraggedFrom, baDraggedTo);*/
-    _moves="draggedFrom, draggedTo";
+    //_moves.append(draggedFrom);
+    //_moves.append(draggedTo);
     //_moves.push_back(std::make_pair(QByteArray(draggedFrom),QByteArray (draggedTo)));
+    _moves.append(qMakePair(draggedFrom, draggedTo));
     }    
 }
 
@@ -104,33 +106,21 @@ void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) 
     }
 }
 
-void BoardModel::save(const QString &fileUrl) {
-    /*std::ofstream fout(fileUrl, ios_base::out);
-    if(!fout.is_open()) return;
-
-    fout << _moves;
-    fout.close();*/
-
-    QFile file(fileUrl);
-    if(file.open(QFile::WriteOnly | QFile::Text)) {
-        //file << _moves;
-        //QString str_moves = QVariant(_moves).toString();
-        QTextStream out(&file);
-        out << _moves;
-        /*for (std::vector<Move>::iterator iter = _moves.begin();
-            iter != _moves.end(); iter++){
-            out << *iter;
-        }*/
+void BoardModel::save(const QString &fileName) {
+    QString fn = cutFileName(fileName);
+    QFile file(fn);
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        return;
+    }
+    QTextStream out(&file);
+    for(int i = 0; i < _moves.size(); ++i) {
+        //out << _moves[i] << "\n";
+        out << _moves[i].first << " ";
+        out << _moves[i].second << "\n";
     }
 
-
-    //
-    /*for(unsigned i=0; i<_moves.size(); ++i) {
-        _stringMoves[i] = _moves[i];
-    }
-    //_stringMoves = QString(_moves);
-    out << _stringMoves;*/
     file.close();
+    //qDebug() << _moves;
 }
 
 QHash<int, QByteArray> BoardModel::roleNames() const{
@@ -138,6 +128,13 @@ QHash<int, QByteArray> BoardModel::roleNames() const{
     roles[ItemTypeRole] = "item_type";
     roles[ItemColorRole] = "item_color";
     return roles;
+}
+
+QString BoardModel::cutFileName(const QString &fileName) const
+{
+    QString fn = fileName;
+    fn.replace("file://", "");
+    return fn;
 }
 
 void BoardModel::initialiseData(BoardData &data) {

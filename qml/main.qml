@@ -35,7 +35,10 @@ ApplicationWindow {
         FileDialog {
             id: saveFileDialog
             title: "Please make your choose for save NTG6 data"
-
+            selectExisting: true
+            selectFolder: false
+            selectMultiple: false
+            nameFilters: [ qsTr("TXT files (*.txt)"), qsTr("All files (*)") ]
             onAccepted: {
                 boardModel.save(saveFileDialog.fileUrl)
             }
@@ -43,7 +46,6 @@ ApplicationWindow {
         FileDialog {
             id: loadFileDialog
             title: "Please make your choose for load NTG6 data"
-
             onAccepted: {
                 boardModel.load(loadFileDialog.fileUrl)
             }
@@ -91,7 +93,7 @@ ApplicationWindow {
                 //homeView.initialise()
             }
             onSaveClicked: {
-                saveFileDialog.visible = true
+                saveFileDialog.open()
             }
         }
         Connections {
