@@ -22,8 +22,6 @@ Item {
         tooltip: qsTr("play")
         x: 40
         y: 485
-        //anchors.top: startUpImage.bottom
-        //anchors.left: loadButton.left
         //iconSource:
         onClicked: parent.playClicked()
     }
@@ -33,9 +31,10 @@ Item {
         tooltip: qsTr("load")
         x: 140
         y: 485
-        //anchors.top: startUpImage.bottom
-        //anchors.left: startUpImage.right
         //iconSource:
         onClicked: parent.loadClicked()
+    }
+    function initialise() {
+        boardModel.clear()
     }
 }

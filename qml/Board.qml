@@ -60,8 +60,6 @@ Item {
                     else {""}
                 }
                 anchors.centerIn: parent
-                //smooth: true
-                //fillMode: Image.PreserveAspectFit
             }
 
             states: [

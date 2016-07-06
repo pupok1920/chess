@@ -2,8 +2,6 @@
 
 BoardModel::BoardModel(QObject *parent)
     : QAbstractListModel(parent) {
-    //connect(this, SIGNAL(activePlayerChanged()),
-           // this, SLOT(getActivePlayer()));
 }
 
 BoardModel::~BoardModel(){}
@@ -38,25 +36,16 @@ QVariant BoardModel::data(const QModelIndex &index, int role) const {
 
 bool BoardModel::activePlayer() const {
     return _activePlayer;
-
-    /*if(_activePlayer == WHITE_COLOR) {
-        return true;
-    }
-    else {
-        return false;
-    }*/
 }
 
 void BoardModel::initialise() {
     initialiseData(_data);
-    _activePlayer = true; 
+    _activePlayer = true;
+    emit activePlayerChanged();
+    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
 }
 
 void BoardModel::move(int draggedFrom, int draggedTo) {
-    /*int oldX = draggedFrom % BOARD_SIZE;
-    int oldY = draggedFrom / BOARD_SIZE;
-    int newX = draggedTo % BOARD_SIZE;
-    int newY = draggedTo / BOARD_SIZE;*/
 
     const Piece *pieceFrom = _data.at(Square(draggedFrom));
     
@@ -74,13 +63,7 @@ void BoardModel::move(int draggedFrom, int draggedTo) {
 	int newY = draggedTo / BOARD_SIZE;
 
 	bool result = pieceFrom->isMoveValid(oldX, oldY, newX, newY);
-	changeModel(result, Square(draggedFrom), Square(draggedTo));
-    /*QByteArray baDraggedFrom = QByteArray(draggedFrom);
-    QByteArray baDraggedTo = QByteArray(draggedTo);
-    Move(baDraggedFrom, baDraggedTo);*/
-    //_moves.append(draggedFrom);
-    //_moves.append(draggedTo);
-    //_moves.push_back(std::make_pair(QByteArray(draggedFrom),QByteArray (draggedTo)));
+    changeModel(result, Square(draggedFrom), Square(draggedTo));
     _moves.append(qMakePair(draggedFrom, draggedTo));
     }    
 }
@@ -91,8 +74,7 @@ void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) 
         _data.remove(draggedTo);
         _data.remove(draggedFrom);
         _data.add(draggedTo, cur);
-        //_activePlayer = (false) ? true : false;
-        //_activePlayer = (WHITE_COLOR) ? BLACK_COLOR : WHITE_COLOR;
+
         if(_activePlayer == false) {
             _activePlayer = true;
             emit activePlayerChanged();
@@ -114,13 +96,92 @@ void BoardModel::save(const QString &fileName) {
     }
     QTextStream out(&file);
     for(int i = 0; i < _moves.size(); ++i) {
-        //out << _moves[i] << "\n";
-        out << _moves[i].first << " ";
+        out << _moves[i].first << "\n";
         out << _moves[i].second << "\n";
     }
-
     file.close();
     //qDebug() << _moves;
+}
+
+void BoardModel::load(const QString &fileName) {
+    QString fn = cutFileName(fileName);
+    QFile file(fn);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return;
+    }
+    _moves.clear();
+    _movesIter = 0;
+    initialiseData(_data);
+    QTextStream in(&file);
+    while(!in.atEnd()) {
+        _moves.append(qMakePair(in.readLine().toInt(), in.readLine().toInt()));
+    }
+    file.close();
+    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
+    //qDebug() << _moves;
+}
+
+void BoardModel::redo() {
+    if(_movesIter >= _moves.size()) {
+        return;
+    }
+    Square from = Square(_moves[_movesIter].second);
+    Square to = Square(_moves[_movesIter].first);
+    const Piece *cur = _data.at(from);
+    const Piece *removedCur = _data.at(to);
+    _removedPieces.add(Square(_movesIter), removedCur);
+
+    _data.remove(to);
+    _data.remove(from);
+    _data.add(to, cur);
+
+    if(_activePlayer == false) {
+        _activePlayer = true;
+        emit activePlayerChanged();
+    }
+    else {
+        _activePlayer = false;
+        emit activePlayerChanged();
+    }
+
+    ++_movesIter;
+    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
+    //qDebug() << _movesIter;
+
+}
+
+void BoardModel::undo() {
+    if(_movesIter == 0) {
+        return;
+    }
+    else {
+        Square from = Square(_moves[_movesIter - 1].second);
+        Square to = Square(_moves[_movesIter - 1].first);
+        const Piece *cur = _data.at(to);
+
+        _data.remove(to);
+        _data.add(from, cur);
+        _data.add(to, _removedPieces.at(Square(_movesIter - 1)));
+
+        if(_activePlayer == false) {
+            _activePlayer = true;
+            emit activePlayerChanged();
+        }
+        else {
+            _activePlayer = false;
+            emit activePlayerChanged();
+        }
+
+        --_movesIter;
+        emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
+        //qDebug() << _movesIter;
+    }
+}
+
+void BoardModel::clear() {
+    _data.clear();
+    _removedPieces.clear();
+    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
 }
 
 QHash<int, QByteArray> BoardModel::roleNames() const{

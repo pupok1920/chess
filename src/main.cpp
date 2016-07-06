@@ -12,7 +12,6 @@ int main(int argc, char *argv[])
     } app(argc, argv);
 
     BoardModel board;
-    board.initialise();
 
     QQmlApplicationEngine engine;
     QQmlContext *ctxt = engine.rootContext();

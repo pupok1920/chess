@@ -7,9 +7,6 @@
 #include <QVector>
 #include <QDebug>
 #include <utility>
-#include <fstream>
-#include <string>
-#include <sstream>
 #include "boarddata.h"
 
 class BoardModel: public QAbstractListModel {
@@ -32,9 +29,12 @@ public:
     bool activePlayer() const;
 
     Q_INVOKABLE void initialise();
-
     Q_INVOKABLE void move(int draggedFrom, int draggedTo);
     Q_INVOKABLE void save(const QString  &fileName);
+    Q_INVOKABLE void load(const QString  &fileName);
+    Q_INVOKABLE void redo();
+    Q_INVOKABLE void undo();
+    Q_INVOKABLE void clear();
 
 signals:
     void activePlayerChanged();
@@ -48,18 +48,11 @@ private:
     void initialiseData(BoardData &data);
 
 private:
-    //typedef std::pair<QByteArray, QByteArray> Move;
-    //typedef std::vector<Move> Moves;
-    //typedef std::vector<QString> StringMoves;
-    //QPair<QByteArray, QByteArray> _move;
     QVector<QPair<int, int> > _moves;
-    //*//////QList<int> _moves;
-    //Moves _moves;
-    /*StringMoves _stringMoves;
-    typedef std::vector<int> Move;
-    Move _move;*/
-
+    BoardData _removedPieces;
     BoardData _data;
+
+    unsigned int _movesIter;
     bool  _activePlayer;
 };
 

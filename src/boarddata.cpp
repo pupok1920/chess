@@ -23,6 +23,13 @@ const Piece *BoardData::at(const Square &square) const {
     return _data.at(square.index());
 }
 
+void BoardData::clear()
+{
+    for(unsigned i = 0; i < _data.size(); ++i) {
+        _data[i] = 0;
+    }
+}
+
 const Piece *BoardData::pawn(PieceColor color) const {
     return (color == WHITE_COLOR) ? &_whitePawn : &_blackPawn;
 }

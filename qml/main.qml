@@ -41,17 +41,26 @@ ApplicationWindow {
             nameFilters: [ qsTr("TXT files (*.txt)"), qsTr("All files (*)") ]
             onAccepted: {
                 boardModel.save(saveFileDialog.fileUrl)
+                stackView.push({ item: mainContainer.homeViewForm, replace: true})
+                homeView.initialise()
             }
         }
         FileDialog {
             id: loadFileDialog
             title: "Please make your choose for load NTG6 data"
+            selectExisting: true
+            selectFolder: false
+            selectMultiple: false
+            nameFilters: [ qsTr("TXT files (*.txt)"), qsTr("All files (*)") ]
             onAccepted: {
                 boardModel.load(loadFileDialog.fileUrl)
             }
+            onRejected: {
+                stackView.push({ item: mainContainer.homeViewForm, replace: true})
+            }
         }
 
-	StackView {
+        StackView {
         id: stackView
         initialItem: parent.homeViewForm
 	    delegate: StackViewDelegate {
@@ -84,13 +93,15 @@ ApplicationWindow {
             }
             onLoadClicked: {
                 loadFileDialog.open()
+                stackView.pop()
+                stackView.push(mainContainer.replayViewForm)
             }
         }
         Connections {
             target: playView
             onStopClicked: {
                 stackView.pop()
-                //homeView.initialise()
+                homeView.initialise()
             }
             onSaveClicked: {
                 saveFileDialog.open()

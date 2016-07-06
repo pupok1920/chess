@@ -12,6 +12,8 @@ public:
     void remove(const Square &square);
     const Piece *at(const Square &square) const;
 
+    void clear();
+
     const Piece *pawn(PieceColor color) const;
     const Piece *rook(PieceColor color) const;
     const Piece *knight(PieceColor color) const;

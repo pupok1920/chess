@@ -19,8 +19,6 @@ Item {
         tooltip: qsTr("save")
         x: 220
         y: 485
-        //anchors.top: board.bottom
-        //anchors.right: board.right
         onClicked: parent.saveClicked()
     }
     Button {
@@ -29,7 +27,6 @@ Item {
         tooltip: qsTr("home")
         x: 340
         y: 485
-        //anchors: {top: board.bottom; right: saveButton.left}
         onClicked: parent.stopClicked()
     }
     function initialise() {
