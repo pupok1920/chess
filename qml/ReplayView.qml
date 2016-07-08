@@ -118,7 +118,4 @@ Item {
         y: 485
         onClicked: parent.undoClicked()
     }
-    function initialise() {
-        boardModel.initialise()
-    }
 }

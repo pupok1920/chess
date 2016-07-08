@@ -9,6 +9,7 @@ SOURCES += src/main.cpp \
     src/pieces.cpp \
     src/boarddata.cpp \
     src/boardmodel.cpp \
+    src/replaycommand.cpp
 
 RESOURCES += qml/qml.qrc
 
@@ -18,3 +19,4 @@ HEADERS += \
     src/pieces.h \
     src/boarddata.h \
     src/boardmodel.h \
+    src/replaycommand.h

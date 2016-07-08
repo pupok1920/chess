@@ -1,11 +1,10 @@
 #include "boardmodel.h"
 
 BoardModel::BoardModel(QObject *parent)
-    : QAbstractListModel(parent),
-      _undoStack(new QUndoStack(this)),
-      _activePlayer(true) { }
+    : QAbstractListModel(parent) {
+}
 
-BoardModel::~BoardModel() { }
+BoardModel::~BoardModel(){}
 
 int BoardModel::rowCount(const QModelIndex &parent) const {
     Q_UNUSED(parent);
@@ -110,31 +109,31 @@ void BoardModel::load(const QString &fileName) {
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return;
     }
-    clear();
-    initialise();
+    _moves.clear();
+    _movesIter = 0;
+    initialiseData(_data);
     QTextStream in(&file);
     while(!in.atEnd()) {
         _moves.append(qMakePair(in.readLine().toInt(), in.readLine().toInt()));
     }
     file.close();
-
-    for(unsigned i = 0; i < _moves.size(); ++i) {
-        ReplayCommand *cmd = new ReplayCommand(&_data, _moves[i], 0);
-        _undoStack->push(cmd);
-    }
-    _undoStack->setIndex(0);
-
-    //emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
+    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
     //qDebug() << _moves;
 }
 
 void BoardModel::redo() {
-
-    if(!_undoStack->canRedo())
+    if(_movesIter >= _moves.size()) {
         return;
+    }
+    Square from = Square(_moves[_movesIter].second);
+    Square to = Square(_moves[_movesIter].first);
+    const Piece *cur = _data.at(from);
+    const Piece *removedCur = _data.at(to);
+    _removedPieces.add(Square(_movesIter), removedCur);
 
-    _undoStack->redo();
-
+    _data.remove(to);
+    _data.remove(from);
+    _data.add(to, cur);
 
     if(_activePlayer == false) {
         _activePlayer = true;
@@ -145,35 +144,44 @@ void BoardModel::redo() {
         emit activePlayerChanged();
     }
 
+    ++_movesIter;
     emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
     //qDebug() << _movesIter;
 
 }
 
 void BoardModel::undo() {
-
-    if(!_undoStack->canUndo())
+    if(_movesIter == 0) {
         return;
-
-    _undoStack->undo();
-
-    if(_activePlayer == false) {
-        _activePlayer = true;
-        emit activePlayerChanged();
     }
     else {
-        _activePlayer = false;
-        emit activePlayerChanged();
-    }
+        Square from = Square(_moves[_movesIter - 1].second);
+        Square to = Square(_moves[_movesIter - 1].first);
+        const Piece *cur = _data.at(to);
 
-    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
-    //qDebug() << _movesIter;
+        _data.remove(to);
+        _data.add(from, cur);
+        _data.add(to, _removedPieces.at(Square(_movesIter - 1)));
+
+        if(_activePlayer == false) {
+            _activePlayer = true;
+            emit activePlayerChanged();
+        }
+        else {
+            _activePlayer = false;
+            emit activePlayerChanged();
+        }
+
+        --_movesIter;
+        emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
+        //qDebug() << _movesIter;
+    }
 }
 
 void BoardModel::clear() {
-    _moves.clear();
-    _undoStack->clear();
-    //emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
+    _data.clear();
+    _removedPieces.clear();
+    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
 }
 
 QHash<int, QByteArray> BoardModel::roleNames() const{
@@ -190,10 +198,7 @@ QString BoardModel::cutFileName(const QString &fileName) const
     return fn;
 }
 
-void BoardModel::initialiseData(BoardData &data) {    
-
-    data.clear();
-
+void BoardModel::initialiseData(BoardData &data) {
     for(unsigned i = 0; i < BOARD_SIZE; ++i) {
         data.add(Square(6, i), data.pawn(WHITE_COLOR));
         data.add(Square(1, i), data.pawn(BLACK_COLOR));

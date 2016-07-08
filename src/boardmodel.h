@@ -8,6 +8,9 @@
 #include <QDebug>
 #include <utility>
 #include "boarddata.h"
+#include "replaycommand.h"
+
+class QUndoStack;
 
 class BoardModel: public QAbstractListModel {
     Q_OBJECT
@@ -49,10 +52,9 @@ private:
 
 private:
     QVector<QPair<int, int> > _moves;
-    BoardData _removedPieces;
     BoardData _data;
+    QUndoStack *_undoStack;
 
-    unsigned int _movesIter;
     bool  _activePlayer;
 };
 
