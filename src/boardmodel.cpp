@@ -89,6 +89,75 @@ void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) 
     }
 }
 
+bool BoardModel::isFileValid(QFile &file) const {
+    //bool result = true;
+    QErrorMessage errorMessage = new QErrorMessage();
+    if(!file.exists())
+        errorMessage.showMessage(tr("The file doesn't exist.", "ErrorMessage"));
+        return false;
+
+    QFileInfo fi = file.fileName();
+    if(fi.suffix() != ".txt")
+        errorMessage.showMessage(tr("The type of the file isn't .txt", "ErrorMessage"));
+        return false;
+
+    enum FileError fault = file.error();
+    switch(fault) {
+        case 1: {
+            QErrorMessage::showMessage("An error occurred when reading from the file.", "ErrorMessage");
+            return false;
+            break;
+        }
+        case 3: {
+            QErrorMessage::showMessage("A fatal error occurred.", "ErrorMessage");
+            return false;
+            break;
+        }
+        case 4: {
+            QErrorMessage::showMessage("Out of resources (e.g., too many open files, out of memory, etc.)", "ErrorMessage");
+            return false;
+            break;
+        }
+        case 5: {
+            QErrorMessage::showMessage("The file could not be opened.", "ErrorMessage");
+            return false;
+            break;
+        }
+        case 6: {
+            QErrorMessage::showMessage("The operation was aborted.", "ErrorMessage");
+            return false;
+            break;
+        }
+        case 7: {
+            QErrorMessage::showMessage("A timeout occurred.", "ErrorMessage");
+            return false;
+            break;
+        }
+        case 8: {
+            QErrorMessage::showMessage("An unspecified error occurred.", "ErrorMessage");
+            return false;
+            break;
+        }
+    }
+
+    unsigned int sum = 0;
+    while(!file.atEnd()) {
+        file.readLine();
+        ++sum;
+    }
+    if(sum % 2) {
+        QErrorMessage::showMessage("Something wrong with that file. Try to use another one.", "ErrorMessage");
+        return false;
+    }
+
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return false;
+    }
+
+    else
+        return true;
+}
+
 void BoardModel::save(const QString &fileName) {
     QString fn = cutFileName(fileName);
     QFile file(fn);
@@ -107,9 +176,12 @@ void BoardModel::save(const QString &fileName) {
 void BoardModel::load(const QString &fileName) {
     QString fn = cutFileName(fileName);
     QFile file(fn);
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+
+    bool trueFile = isFileValid(file);
+    if(!trueFile) {
         return;
     }
+
     clear();
     initialise();
     QTextStream in(&file);

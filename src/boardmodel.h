@@ -2,6 +2,9 @@
 #define __BOARDMODELNJNBDJBNDLBNDLBNDKBNDKBNDKL__
 #include <QAbstractListModel>
 #include <QFile>
+#include <QFileDevice>
+#include <QFileInfo>
+#include <QErrorMessage>
 #include <QTextStream>
 #include <QPair>
 #include <QVector>
@@ -46,6 +49,7 @@ protected:
     QHash<int, QByteArray> roleNames() const;
     QString cutFileName(const QString &fileName) const;
     void changeModel(bool result, Square draggedFrom, Square draggedTo);
+    bool isFileValid(QFile &file) const;
 
 private:
     void initialiseData(BoardData &data);
