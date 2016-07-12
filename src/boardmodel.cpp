@@ -42,6 +42,8 @@ bool BoardModel::activePlayer() const {
 void BoardModel::initialise() {
     initialiseData(_data);
     _activePlayer = true;
+    //QErrorMessage *errorMessage = new QErrorMessage();
+    //errorMessage->showMessage("done");
     emit activePlayerChanged();
     emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
 }
@@ -90,72 +92,76 @@ void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) 
 }
 
 bool BoardModel::isFileValid(QFile &file) const {
-    //bool result = true;
-    QErrorMessage errorMessage = new QErrorMessage();
-    if(!file.exists())
-        errorMessage.showMessage(tr("The file doesn't exist.", "ErrorMessage"));
-        return false;
+    bool result = true;
+    QErrorMessage *errorMessage = new QErrorMessage();
+    if(file.exists() == false) {
+        errorMessage->showMessage("The file doesn't exist.", "ErrorMessage");
+        return result = false;
+    }
 
     QFileInfo fi = file.fileName();
-    if(fi.suffix() != ".txt")
-        errorMessage.showMessage(tr("The type of the file isn't .txt", "ErrorMessage"));
-        return false;
+    if(fi.suffix() != "txt") {
+        errorMessage->showMessage("The type of the file isn't .txt", "ErrorMessage");
+         result = false;
+    }
 
-    enum FileError fault = file.error();
+    enum QFileDevice::FileError fault = file.error();
+    qDebug() << "fault:" << fault;
     switch(fault) {
         case 1: {
-            QErrorMessage::showMessage("An error occurred when reading from the file.", "ErrorMessage");
-            return false;
-            break;
+            errorMessage->showMessage("An error occurred when reading from the file.", "ErrorMessage");
+            return result = false;
         }
         case 3: {
-            QErrorMessage::showMessage("A fatal error occurred.", "ErrorMessage");
-            return false;
-            break;
+            errorMessage->showMessage("A fatal error occurred.", "ErrorMessage");
+            return result = false;
         }
         case 4: {
-            QErrorMessage::showMessage("Out of resources (e.g., too many open files, out of memory, etc.)", "ErrorMessage");
-            return false;
-            break;
+            errorMessage->showMessage("Out of resources (e.g., too many open files, out of memory, etc.)", "ErrorMessage");
+            return result = false;
         }
         case 5: {
-            QErrorMessage::showMessage("The file could not be opened.", "ErrorMessage");
-            return false;
-            break;
+            errorMessage->showMessage("The file could not be opened.", "ErrorMessage");
+            return result = false;
         }
         case 6: {
-            QErrorMessage::showMessage("The operation was aborted.", "ErrorMessage");
-            return false;
-            break;
+            errorMessage->showMessage("The operation was aborted.", "ErrorMessage");
+            return result = false;
         }
         case 7: {
-            QErrorMessage::showMessage("A timeout occurred.", "ErrorMessage");
-            return false;
-            break;
+            errorMessage->showMessage("A timeout occurred.", "ErrorMessage");
+            return result = false;
         }
         case 8: {
-            QErrorMessage::showMessage("An unspecified error occurred.", "ErrorMessage");
-            return false;
-            break;
+            errorMessage->showMessage("An unspecified error occurred.", "ErrorMessage");
+            return result = false;
         }
+
+        qDebug() << result;
+    }
+
+    if(file.readLine().toInt() == 0) {
+        errorMessage->showMessage("Wrong file. Try to use another one.", "ErrorMessage");
+        return result = false;
     }
 
     unsigned int sum = 0;
     while(!file.atEnd()) {
-        file.readLine();
+        if(file.readLine().toInt() > 64 || file.readLine().toInt() == 0) {
+            errorMessage->showMessage("Bad file. Try to use another one.", "ErrorMessage");
+            return result = false;
+        }
         ++sum;
     }
+    qDebug() << file.readLine();
+    qDebug() << sum;
+    file.seek(0);
     if(sum % 2) {
-        QErrorMessage::showMessage("Something wrong with that file. Try to use another one.", "ErrorMessage");
-        return false;
+        errorMessage->showMessage("Something wrong with that file. Try to use another one.", "ErrorMessage");
+        return result = false;
     }
-
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        return false;
-    }
-
-    else
-        return true;
+    qDebug() << result;
+    return result;
 }
 
 void BoardModel::save(const QString &fileName) {
@@ -176,6 +182,9 @@ void BoardModel::save(const QString &fileName) {
 void BoardModel::load(const QString &fileName) {
     QString fn = cutFileName(fileName);
     QFile file(fn);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return;
+    }
 
     bool trueFile = isFileValid(file);
     if(!trueFile) {
@@ -243,9 +252,10 @@ void BoardModel::undo() {
 }
 
 void BoardModel::clear() {
+    _data.clear();
     _moves.clear();
     _undoStack->clear();
-    //emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
+    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
 }
 
 QHash<int, QByteArray> BoardModel::roleNames() const{
