@@ -60,14 +60,14 @@ void BoardModel::move(int draggedFrom, int draggedTo) {
     const Piece *pieceTo = _data.at(Square(draggedTo));
 
     if(pieceTo == 0 || pieceFrom->color() != pieceTo->color()) {
-	int oldX = draggedFrom % BOARD_SIZE;
-	int oldY = draggedFrom / BOARD_SIZE;
-	int newX = draggedTo % BOARD_SIZE;
-	int newY = draggedTo / BOARD_SIZE;
+        int oldX = draggedFrom % BOARD_SIZE;
+        int oldY = draggedFrom / BOARD_SIZE;
+        int newX = draggedTo % BOARD_SIZE;
+        int newY = draggedTo / BOARD_SIZE;
 
-	bool result = pieceFrom->isMoveValid(oldX, oldY, newX, newY);
-    changeModel(result, Square(draggedFrom), Square(draggedTo));
-    _moves.append(qMakePair(draggedFrom, draggedTo));
+        bool result = pieceFrom->isMoveValid(oldX, oldY, newX, newY);
+        changeModel(result, Square(draggedFrom), Square(draggedTo));
+        _moves.append(qMakePair(draggedFrom, draggedTo));
     }    
 }
 
@@ -91,9 +91,11 @@ void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) 
     }
 }
 
-bool BoardModel::isFileValid(QFile &file) const {
+bool BoardModel::isFileValid(QFile &file) {
+
     bool result = true;
     QErrorMessage *errorMessage = new QErrorMessage();
+
     if(file.exists() == false) {
         errorMessage->showMessage("The file doesn't exist.", "ErrorMessage");
         return result = false;
@@ -101,12 +103,11 @@ bool BoardModel::isFileValid(QFile &file) const {
 
     QFileInfo fi = file.fileName();
     if(fi.suffix() != "txt") {
-        errorMessage->showMessage("The type of the file isn't .txt", "ErrorMessage");
-         result = false;
+        errorMessage->showMessage("The type of the file isn't '.txt'", "ErrorMessage");
+         return result = false;
     }
 
     enum QFileDevice::FileError fault = file.error();
-    qDebug() << "fault:" << fault;
     switch(fault) {
         case 1: {
             errorMessage->showMessage("An error occurred when reading from the file.", "ErrorMessage");
@@ -136,35 +137,81 @@ bool BoardModel::isFileValid(QFile &file) const {
             errorMessage->showMessage("An unspecified error occurred.", "ErrorMessage");
             return result = false;
         }
-
-        qDebug() << result;
     }
 
     QTextStream in(&file);
     if(in.readLine().toInt() == 0) {
         errorMessage->showMessage("Wrong file. Try to use another one.", "ErrorMessage");
         return result = false;
-    }    
+    }
     in.seek(0);
 
     unsigned int sum = 0;
     while(!in.atEnd()) {
-        /*if(in.readLine().toInt() > 64) {
+        if(in.readLine().toInt() > 63) {
             errorMessage->showMessage("Bad file. Try to use another one.", "ErrorMessage");
             return result = false;
-        }*/
-        qDebug() << "result1" << in.readLine().toInt();
+        }
         ++sum;
     }
-    //qDebug() << in.string();
-    qDebug() << "sum: " << sum;
-    file.seek(0);
+    in.seek(0);
+
     if(sum % 2) {
         errorMessage->showMessage("Something wrong with that file. Try to use another one.", "ErrorMessage");
         return result = false;
     }
-    qDebug() << "result2" << result;
+
+    bool testData = isDataValid(in);
+    if(!testData) {
+        errorMessage->showMessage("The file contains incorrect data. Try to use another one.", "ErrorMessage");
+        return result = false;
+    }
+    file.seek(0);
+
     return result;
+}
+
+bool BoardModel::isDataValid(QTextStream &in) {
+    initialiseData(_data);
+    _activePlayer = true;
+
+    while(!in.atEnd()) {
+        int draggedFrom = in.readLine().toInt();
+        int draggedTo = in.readLine().toInt();
+        const Piece *pieceFrom = _data.at(Square(draggedFrom));
+
+        if(pieceFrom == 0) return false;
+
+        if((_activePlayer == true && pieceFrom->color() != WHITE_COLOR)
+                || (_activePlayer == false && pieceFrom->color() != BLACK_COLOR)) return false;
+
+        const Piece *pieceTo = _data.at(Square(draggedTo));
+
+        if(pieceTo == 0 || pieceFrom->color() != pieceTo->color()) {
+            int oldX = draggedFrom % BOARD_SIZE;
+            int oldY = draggedFrom / BOARD_SIZE;
+            int newX = draggedTo % BOARD_SIZE;
+            int newY = draggedTo / BOARD_SIZE;
+
+            bool result = pieceFrom->isMoveValid(oldX, oldY, newX, newY);
+            const Piece *cur = _data.at(Square(draggedFrom));
+            if(result) {
+                _data.remove(Square(draggedTo));
+                _data.remove(Square(draggedFrom));
+                _data.add(Square(draggedTo), cur);
+                if(_activePlayer == false) {
+                    _activePlayer = true;
+                }
+                else {
+                    _activePlayer = false;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 void BoardModel::save(const QString &fileName) {
@@ -185,6 +232,7 @@ void BoardModel::save(const QString &fileName) {
 void BoardModel::load(const QString &fileName) {
     QString fn = cutFileName(fileName);
     QFile file(fn);
+
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return;
     }
@@ -207,9 +255,6 @@ void BoardModel::load(const QString &fileName) {
         _undoStack->push(cmd);
     }
     _undoStack->setIndex(0);
-
-    //emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
-    //qDebug() << _moves;
 }
 
 void BoardModel::redo() {

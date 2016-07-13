@@ -49,7 +49,8 @@ protected:
     QHash<int, QByteArray> roleNames() const;
     QString cutFileName(const QString &fileName) const;
     void changeModel(bool result, Square draggedFrom, Square draggedTo);
-    bool isFileValid(QFile &file) const;
+    bool isFileValid(QFile &file);
+    bool isDataValid(QTextStream &in);
 
 private:
     void initialiseData(BoardData &data);
