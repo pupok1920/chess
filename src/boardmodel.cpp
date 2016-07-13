@@ -140,27 +140,30 @@ bool BoardModel::isFileValid(QFile &file) const {
         qDebug() << result;
     }
 
-    if(file.readLine().toInt() == 0) {
+    QTextStream in(&file);
+    if(in.readLine().toInt() == 0) {
         errorMessage->showMessage("Wrong file. Try to use another one.", "ErrorMessage");
         return result = false;
-    }
+    }    
+    in.seek(0);
 
     unsigned int sum = 0;
-    while(!file.atEnd()) {
-        if(file.readLine().toInt() > 64 || file.readLine().toInt() == 0) {
+    while(!in.atEnd()) {
+        /*if(in.readLine().toInt() > 64) {
             errorMessage->showMessage("Bad file. Try to use another one.", "ErrorMessage");
             return result = false;
-        }
+        }*/
+        qDebug() << "result1" << in.readLine().toInt();
         ++sum;
     }
-    qDebug() << file.readLine();
-    qDebug() << sum;
+    //qDebug() << in.string();
+    qDebug() << "sum: " << sum;
     file.seek(0);
     if(sum % 2) {
         errorMessage->showMessage("Something wrong with that file. Try to use another one.", "ErrorMessage");
         return result = false;
     }
-    qDebug() << result;
+    qDebug() << "result2" << result;
     return result;
 }
 
