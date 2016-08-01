@@ -7,6 +7,13 @@ BoardModel::BoardModel(QObject *parent)
 
 BoardModel::~BoardModel() { }
 
+struct Piece {
+    Piece(): {}
+private:
+    QString _type;
+    QString _color;
+};
+
 int BoardModel::rowCount(const QModelIndex &parent) const {
     Q_UNUSED(parent);
     return BOARD_SIZE * BOARD_SIZE;

@@ -18,6 +18,13 @@ class QUndoStack;
 class BoardModel: public QAbstractListModel {
     Q_OBJECT
 
+    enum {
+        BOARD_SIZE = 8
+    };
+    enum PieceColor {
+        WHITE_COLOR,
+        BLACK_COLOR
+    };
     enum Roles {
         ItemTypeRole = Qt::UserRole + 1,
         ItemColorRole
@@ -49,17 +56,12 @@ protected:
     QHash<int, QByteArray> roleNames() const;
     QString cutFileName(const QString &fileName) const;
     void changeModel(bool result, Square draggedFrom, Square draggedTo);
-    bool isFileValid(QFile &file);
-    bool isDataValid(QTextStream &in);
 
 private:
     void initialiseData(BoardData &data);
 
 private:
-    QVector<QPair<int, int> > _moves;
-    BoardData _data;
-    QUndoStack *_undoStack;
-
+    QVector<Piece *> _pieces;
     bool  _activePlayer;
 };
 
