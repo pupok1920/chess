@@ -1,9 +1,9 @@
 #include "boardmodel.h"
 
 BoardModel::BoardModel(QObject *parent)
-    : QAbstractListModel(parent),
-      _undoStack(new QUndoStack(this)),
-      _activePlayer(true) { }
+    : QAbstractListModel(parent)
+    , _undoStack(new QUndoStack(this))
+    , _activePlayer(true) { }
 
 BoardModel::~BoardModel() { }
 
