@@ -10,8 +10,9 @@
 #include <QVector>
 #include <QDebug>
 #include <utility>
-#include "boarddata.h"
-#include "replaycommand.h"
+#include <QTcpSocket>
+//#include "boarddata.h"
+//#include "replaycommand.h"
 
 class QUndoStack;
 
@@ -61,6 +62,11 @@ private:
     void initialiseData(BoardData &data);
 
 private:
+    struct Piece {
+    private:
+        QString _type;
+        QString _color;
+    };
     QVector<Piece *> _pieces;
     bool  _activePlayer;
 };
