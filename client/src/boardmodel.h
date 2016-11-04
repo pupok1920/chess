@@ -68,6 +68,7 @@ private:
         QString _color;
     };
     QVector<Piece *> _pieces;
+    QTcpSocket _socket;
     bool  _activePlayer;
 };
 

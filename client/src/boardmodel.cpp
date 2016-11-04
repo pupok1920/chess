@@ -2,7 +2,8 @@
 
 BoardModel::BoardModel(QObject *parent)
     : QAbstractListModel(parent)
-    , _activePlayer(true) { }
+    , _activePlayer(true)
+    , _socket(new QTcpSocket(this)) { }
 
 BoardModel::~BoardModel() { }
 
@@ -39,8 +40,7 @@ bool BoardModel::activePlayer() const {
 }
 
 void BoardModel::initialise() {
-    QTcpSocket socket = new QTcpSocket(this);
-    socket.connectToHost("127")
+    _socket.connectToHost("127.0.0.1", 9999);
     initialiseData(_data);
     _activePlayer = true;
     //QErrorMessage *errorMessage = new QErrorMessage();
