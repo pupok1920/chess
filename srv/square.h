@@ -2,14 +2,15 @@
 #define __SQUARE_KJASHDKJHQWLJKEHJKQASWHNKJANBSHDJKBALKJSDBHASJDHLKJHADASDAHWJSGEWQ__
 
 #include <QCoreApplication>
+#include <QCoreApplication>
 #include <vector>
 #include "consts.h"
 
 
 class Square {
 public:
-    explicit Square(unsigned int index);
     Square(unsigned int row, unsigned int column);
+    explicit Square(unsigned int index);
     Square(): _index(0) {}
 
     unsigned int row() const {

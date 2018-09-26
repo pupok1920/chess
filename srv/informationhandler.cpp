@@ -1,18 +1,18 @@
-#include "boardmodel.h"
+#include "InformationHandler.h"
 
-BoardModel::BoardModel(QObject *parent)
+InformationHandler::InformationHandler(QObject *parent)
     : QAbstractListModel(parent),
       _undoStack(new QUndoStack(this)),
       _activePlayer(true) { }
 
-BoardModel::~BoardModel() { }
+InformationHandler::~InformationHandler() { }
 
-int BoardModel::rowCount(const QModelIndex &parent) const {
+int InformationHandler::rowCount(const QModelIndex &parent) const {
     Q_UNUSED(parent);
     return BOARD_SIZE * BOARD_SIZE;
 }
 
-QVariant BoardModel::data(const QModelIndex &index, int role) const {
+QVariant InformationHandler::data(const QModelIndex &index, int role) const {
     if (index.row() < 0 || index.row() >= BOARD_SIZE * BOARD_SIZE) {
         return QVariant();
     }
@@ -35,11 +35,11 @@ QVariant BoardModel::data(const QModelIndex &index, int role) const {
     }
 }
 
-bool BoardModel::activePlayer() const {
+bool InformationHandler::activePlayer() const {
     return _activePlayer;
 }
 
-void BoardModel::initialise() {
+void InformationHandler::initialise() {
     initialiseData(_data);
     _activePlayer = true;
     //QErrorMessage *errorMessage = new QErrorMessage();
@@ -48,15 +48,15 @@ void BoardModel::initialise() {
     emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
 }
 
-void BoardModel::move(int draggedFrom, int draggedTo) {
+void InformationHandler::move(int draggedFrom, int draggedTo) {
 
     const Piece *pieceFrom = _data.at(Square(draggedFrom));
-    
-    if(pieceFrom == 0) return; 
-    
+
+    if(pieceFrom == 0) return;
+
     if((_activePlayer == true && pieceFrom->color() != WHITE_COLOR)
             || (_activePlayer == false && pieceFrom->color() != BLACK_COLOR)) return;
-    
+
     const Piece *pieceTo = _data.at(Square(draggedTo));
 
     if(pieceTo == 0 || pieceFrom->color() != pieceTo->color()) {
@@ -68,10 +68,10 @@ void BoardModel::move(int draggedFrom, int draggedTo) {
         bool result = pieceFrom->isMoveValid(oldX, oldY, newX, newY);
         changeModel(result, Square(draggedFrom), Square(draggedTo));
         _moves.append(qMakePair(draggedFrom, draggedTo));
-    }    
+    }
 }
 
-void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) {
+void InformationHandler::changeModel(bool result, Square draggedFrom, Square draggedTo) {
     const Piece *cur = _data.at(draggedFrom);
     if(result) {
         _data.remove(draggedTo);
@@ -86,12 +86,12 @@ void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) 
             _activePlayer = false;
             emit activePlayerChanged();
         }
-        
+
         emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
     }
 }
 
-bool BoardModel::isFileValid(QFile &file) {
+bool InformationHandler::isFileValid(QFile &file) {
 
     bool result = true;
     QErrorMessage *errorMessage = new QErrorMessage();
@@ -171,7 +171,7 @@ bool BoardModel::isFileValid(QFile &file) {
     return result;
 }
 
-bool BoardModel::isDataValid(QTextStream &in) {
+bool InformationHandler::isDataValid(QTextStream &in) {
     initialiseData(_data);
     _activePlayer = true;
 
@@ -214,7 +214,7 @@ bool BoardModel::isDataValid(QTextStream &in) {
     return true;
 }
 
-void BoardModel::save(const QString &fileName) {
+void InformationHandler::save(const QString &fileName) {
     QString fn = cutFileName(fileName);
     QFile file(fn);
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -229,7 +229,7 @@ void BoardModel::save(const QString &fileName) {
     //qDebug() << _moves;
 }
 
-void BoardModel::load(const QString &fileName) {
+void InformationHandler::load(const QString &fileName) {
     QString fn = cutFileName(fileName);
     QFile file(fn);
 
@@ -257,7 +257,7 @@ void BoardModel::load(const QString &fileName) {
     _undoStack->setIndex(0);
 }
 
-void BoardModel::redo() {
+void InformationHandler::redo() {
 
     if(!_undoStack->canRedo())
         return;
@@ -279,7 +279,7 @@ void BoardModel::redo() {
 
 }
 
-void BoardModel::undo() {
+void InformationHandler::undo() {
 
     if(!_undoStack->canUndo())
         return;
@@ -299,28 +299,27 @@ void BoardModel::undo() {
     //qDebug() << _movesIter;
 }
 
-void BoardModel::clear() {
+void InformationHandler::clear() {
     _data.clear();
     _moves.clear();
     _undoStack->clear();
     emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
 }
 
-QHash<int, QByteArray> BoardModel::roleNames() const{
+QHash<int, QByteArray> InformationHandler::roleNames() const{
     QHash<int, QByteArray> roles;
     roles[ItemTypeRole] = "item_type";
     roles[ItemColorRole] = "item_color";
     return roles;
 }
 
-QString BoardModel::cutFileName(const QString &fileName) const
-{
+QString InformationHandler::cutFileName(const QString &fileName) const {
     QString fn = fileName;
     fn.replace("file://", "");
     return fn;
 }
 
-void BoardModel::initialiseData(BoardData &data) {    
+void InformationHandler::initialiseData(BoardData &data) {
 
     data.clear();
 
