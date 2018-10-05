@@ -4,17 +4,7 @@ Piece::Piece() {}
 
 Piece::~Piece() {}
 
-PieceBase::PieceBase(PieceColor color): _color(color) {}
-
-PieceColor PieceBase::color() const {
-    return _color;
-}
-
-Pawn::Pawn(PieceColor color):PieceBase(color) {}
-
-QString Pawn::type() const {
-    return "pawn";
-}
+Pawn::Pawn():Piece() {}
 
 bool Pawn::isMoveValid(int oldX, int oldY, int newX, int newY) const {
     if(abs(oldY - newY) != 1 || abs(oldX - newX) > 1)
@@ -23,11 +13,7 @@ bool Pawn::isMoveValid(int oldX, int oldY, int newX, int newY) const {
         return true;
 }
 
-Rook::Rook(PieceColor color):PieceBase(color) {}
-
-QString Rook::type() const {
-    return "rook";
-}
+Rook::Rook():Piece() {}
 
 bool Rook::isMoveValid(int oldX, int oldY, int newX, int newY) const {
     if((abs(oldX - newX) >= 1 && (oldY - newY) != 0)
@@ -37,11 +23,7 @@ bool Rook::isMoveValid(int oldX, int oldY, int newX, int newY) const {
         return true;
 }
 
-Knight::Knight(PieceColor color):PieceBase(color) {}
-
-QString Knight::type() const {
-    return "knight";
-}
+Knight::Knight():Piece() {}
 
 bool Knight::isMoveValid(int oldX, int oldY, int newX, int newY) const {
     if(!((abs(oldX - newX) == 2 && abs(oldY - newY) == 1)
@@ -51,11 +33,7 @@ bool Knight::isMoveValid(int oldX, int oldY, int newX, int newY) const {
         return true;
 }
 
-Bishop::Bishop(PieceColor color):PieceBase(color) {}
-
-QString Bishop::type() const {
-    return "bishop";
-}
+Bishop::Bishop():Piece() {}
 
 bool Bishop::isMoveValid(int oldX, int oldY, int newX, int newY) const {
     if(abs(oldX - newX) != abs(oldY - newY))
@@ -64,11 +42,7 @@ bool Bishop::isMoveValid(int oldX, int oldY, int newX, int newY) const {
         return true;
 }
 
-Queen::Queen(PieceColor color):PieceBase(color) {}
-
-QString Queen::type() const {
-    return "queen";
-}
+Queen::Queen():Piece() {}
 
 bool Queen::isMoveValid(int oldX, int oldY, int newX, int newY) const {
     if(((abs(oldX - newX) >= 1 && (oldY - newY) != 0)
@@ -79,11 +53,7 @@ bool Queen::isMoveValid(int oldX, int oldY, int newX, int newY) const {
         return false;
 }
 
-King::King(PieceColor color):PieceBase(color) {}
-
-QString King::type() const {
-    return "king";
-}
+King::King():Piece() {}
 
 bool King::isMoveValid(int oldX, int oldY, int newX, int newY) const {
     if(abs(oldX - newX) > 1 || abs(oldY - newY) > 1)
@@ -91,4 +61,3 @@ bool King::isMoveValid(int oldX, int oldY, int newX, int newY) const {
     else
         return true;
 }
-
