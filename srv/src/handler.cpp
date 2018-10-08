@@ -1,5 +1,6 @@
 #include <QtNetwork>
 #include <QtCore>
+#include <QByteArray>
 
 #include "handler.h"
 
@@ -33,39 +34,61 @@ void Handler::handleConnection() {
     //QByteArray ba = clientConnection->readAll();
     //qDebug() << "ba: " << ba;
 
-    QByteArray inDataPieceType = clientConnection->readLine(2);
-    QByteArray inDataFrom = clientConnection->readLine(2);
-    QByteArray inDataTo = clientConnection->readLine(2);
+    QByteArray inDataPieceType = clientConnection->read(4);
+    QByteArray inDataFrom = clientConnection->read(4);
+    QByteArray inDataTo = clientConnection->read(4);
 
-    /*qDebug() << "pieceType is: " << inDataPieceType;
-    qDebug() << "From is: " << inDataFrom;
-    qDebug() << "To is: " << inDataTo;*/
+    qDebug() << "pieceType is: " << inDataPieceType;
+    qDebug() << "from is: " << inDataFrom;
+    qDebug() << "to is: " << inDataTo;
 
-    int intPieceType = inDataPieceType.toInt();
-    //PieceType pieceType = PieceType(intPieceType);
-    int draggedFrom = inDataFrom.toInt();
-    int draggedTo = inDataTo.toInt();
+    char chrPieceType = inDataPieceType[3];
+    char chrDraggedFrom = inDataFrom[3];
+    char chrDraggedTo = inDataTo[3];
     //int intPieceType = static_cast<int>(inDataPieceType);
-    PieceType pieceType = static_cast<PieceType>(intPieceType);
-    //int draggedFrom = static_cast<int>(inDataFrom);
-    //int draggedTo = static_cast<int>(inDataTo);
+
+    PieceType pieceType = static_cast<PieceType>(chrPieceType);
+    int draggedFrom = static_cast<int>(chrDraggedFrom);
+    int draggedTo = static_cast<int>(chrDraggedTo);
+
+    qDebug() << "Piece: " << (int)pieceType;
+    qDebug() << "From: " << draggedFrom;
+    qDebug() << "To: " << draggedTo;
 
     int oldX = draggedFrom % BOARD_SIZE;
     int oldY = draggedFrom / BOARD_SIZE;
     int newX = draggedTo % BOARD_SIZE;
     int newY = draggedTo / BOARD_SIZE;
 
+    qDebug() << oldX;
+    qDebug() << oldY;
+    qDebug() << newX;
+    qDebug() << newY;
+
     const Piece *pieceFrom = _data.type(pieceType);
 
     bool result = pieceFrom->isMoveValid(oldX, oldY, newX, newY);
 
     const char tr = 1;
-    const char fls = 0;
+    const char fls = 9;
 
-    if(result)
-      clientConnection->write(&tr);
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+
+    if(result) {
+      out << tr;
+    }
+    else {
+      out << fls;
+    }
+
+    clientConnection->write(ba);
+    qDebug() << "result is: " << (int)ba.at(3);
+
+    if(clientConnection->waitForBytesWritten())
+      qDebug() << "bytes were written";
     else
-      clientConnection->write(&fls);
+      qDebug() << "bytes were not written";
 
     clientConnection->disconnectFromHost();
 }
