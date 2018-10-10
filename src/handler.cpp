@@ -70,7 +70,7 @@ void Handler::handleConnection() {
     bool result = pieceFrom->isMoveValid(oldX, oldY, newX, newY);
 
     const char tr = 1;
-    const char fls = 9;
+    const char fls = 0;
 
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);

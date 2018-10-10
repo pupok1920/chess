@@ -45,12 +45,12 @@ bool Bishop::isMoveValid(int oldX, int oldY, int newX, int newY) const {
 Queen::Queen():Piece() {}
 
 bool Queen::isMoveValid(int oldX, int oldY, int newX, int newY) const {
-    if(((abs(oldX - newX) >= 1 && (oldY - newY) != 0)
-        || (abs(oldY - newY) >= 1 && (oldX - newX) != 0))
-                || (abs(oldX - newX) != abs(oldY - newY)))
-        return true;
-    else
+    if(!((abs(oldX - newX) == abs(oldY - newY))
+        || (abs(oldX - newX) >= 1 && (oldY - newY) == 0)
+           || (abs(oldY - newY) >= 1 && (oldX - newX) == 0)))
         return false;
+    else
+        return true;
 }
 
 King::King():Piece() {}

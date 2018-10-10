@@ -15,3 +15,5 @@ bin/
 *.txt
 
 v1/
+
+srv/
