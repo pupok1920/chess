@@ -5,6 +5,11 @@ enum {
     BOARD_SIZE = 8
 };
 
+enum PieceColor {
+    WHITE_COLOR,
+    BLACK_COLOR
+};
+
 enum PieceType {
     PAWN = 1,
     ROOK = 2,
@@ -13,5 +18,4 @@ enum PieceType {
     QUEEN = 5,
     KING = 6
 };
-
 #endif // __CONSTSVJSNJSNJSNVSNVNSVNSLN__
