@@ -2,9 +2,12 @@
 #define __HandlerNJNBDJBNDLBNDLBNDKBNDKBNDKL__
 #include <QDebug>
 #include <utility>
+
 #include "data.h"
+#include "player.h"
 
 class QTcpServer;
+class QTcpSocket;
 
 class Handler : public QObject {
     Q_OBJECT
@@ -20,8 +23,22 @@ private slots:
     void handleConnection();
 
 private:
-    Data _data;
+    void read(const QJsonObject&, QTcpSocket*);
+    void doConnectNewPlayer(QTcpSocket*);
+    void doCheckMove(const QJsonObject&, QTcpSocket*);
+    bool isPlayersConnected() { return _playersConnected; }
+
+    void checkJson(const QJsonObject&, QTcpSocket*);
+    void sendDeny(QTcpSocket*);
+    void sendUpd(const QJsonObject&, const Player*);
+
+private:
     QTcpServer *tcpServer = nullptr;
+    Data _data;
+    Player _whitePlayer;
+    Player _blackPlayer;
+    Player *_activePlayer = nullptr;
+    bool _playersConnected = false;
 };
 
-#endif // __HandlerNJNBDJBNDLBNDLBNDKBNDKBNDKL__
+#endif //  __HandlerNJNBDJBNDLBNDLBNDKBNDKBNDKL__

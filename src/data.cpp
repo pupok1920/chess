@@ -6,17 +6,18 @@ Data::~Data() {}
 
 const Piece *Data::type(PieceType pieceType) const {
     switch(pieceType) {
-        case 1: return &_pawn;
-            break;
-        case 2: return &_rook;
-            break;
-        case 3: return &_knight;
-            break;
-        case 4: return &_bishop;
-            break;
-        case 5: return &_queen;
-            break;
-        case 6: return &_king;
-            break;
+      case PieceType::PAWN: return &_pawn;
+          break;
+      case PieceType::ROOK: return &_rook;
+          break;
+      case PieceType::KNIGHT: return &_knight;
+          break;
+      case PieceType::BISHOP: return &_bishop;
+          break;
+      case PieceType::QUEEN: return &_queen;
+          break;
+      case PieceType::KING: return &_king;
+          break;
+      default: return nullptr;
     }
 }
