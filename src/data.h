@@ -11,10 +11,10 @@ public:
     Data();
     ~Data();
 
-    const Piece *type(PieceType pieceType) const;
+    const Piece *type(const PieceType&) const;
 
-    Data& operator=(Data const&) = delete;
-    Data(Data const&) = delete;
+    Data& operator=(const Data&) = delete;
+    Data(const Data&) = delete;
 
 private:
     Pawn _pawn;

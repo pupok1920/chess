@@ -16,8 +16,8 @@ public:
     explicit Handler(QObject *parent = nullptr);
     ~Handler();
 
-    Handler& operator=(Handler const&) = delete;
-    Handler(Handler const&) = delete;
+    Handler& operator=(const Handler&) = delete;
+    Handler(const Handler&) = delete;
 
 private slots:
     void handleConnection();

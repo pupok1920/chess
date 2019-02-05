@@ -4,7 +4,7 @@
 
 class Piece {
 public:
-    explicit Piece();
+    Piece();
     virtual ~Piece();
     virtual bool isMoveValid(int oldX, int oldY, int newX, int newY) const = 0;
 
@@ -14,37 +14,37 @@ public:
 
 class Pawn: public Piece {
 public:
-    explicit Pawn();
+    Pawn();
     bool isMoveValid(int oldX, int oldY, int newX, int newY) const override;
 };
 
 class Rook: public Piece {
 public:
-    explicit Rook();
+    Rook();
     bool isMoveValid(int oldX, int oldY, int newX, int newY) const override;
 };
 
 class Knight: public Piece {
 public:
-    explicit Knight();
+    Knight();
     bool isMoveValid(int oldX, int oldY, int newX, int newY) const override;
 };
 
 class Bishop: public Piece {
 public:
-    explicit Bishop();
+    Bishop();
     bool isMoveValid(int oldX, int oldY, int newX, int newY) const override;
 };
 
 class Queen: public Piece {
 public:
-    explicit Queen();
+    Queen();
     bool isMoveValid(int oldX, int oldY, int newX, int newY) const override;
 };
 
 class King: public Piece {
 public:
-    explicit King();
+    King();
     bool isMoveValid(int oldX, int oldY, int newX, int newY) const override;
 };
 
