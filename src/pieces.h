@@ -1,23 +1,23 @@
 #ifndef __PIECESFJULVFJNSJKLSNJSKLVNVNSL__
 #define __PIECESFJULVFJNSJKLSNJSKLVNVNSL__
 #include <cstdlib>
-#include "square.h"
 
+#include "square.h"
 
 class Piece {
 public:
-    explicit Piece();
+    Piece();
     virtual ~Piece();
-    virtual PieceColor color() const = 0;
+    virtual PieceColor color() const;
     virtual QString type() const = 0;
 
-    Piece& operator=(Piece const&) = delete;
-    Piece(Piece const&) = delete;
+    Piece& operator=(const Piece&) = delete;
+    Piece(const Piece&) = delete;
 };
 
 class PieceBase: public Piece {
 public:
-    explicit PieceBase(PieceColor color);
+    explicit PieceBase(PieceColor);
     PieceColor color() const override;
 
 protected:
@@ -26,39 +26,95 @@ protected:
 
 class Pawn: public PieceBase {
 public:
-    explicit Pawn(PieceColor color);
+    explicit Pawn(PieceColor);
     QString type() const override;
 };
 
 class Rook: public PieceBase {
 public:
-    explicit Rook(PieceColor color);
+    explicit Rook(PieceColor);
     QString type() const override;
 };
 
 class Knight: public PieceBase {
 public:
-    explicit Knight(PieceColor color);
+    explicit Knight(PieceColor);
     QString type() const override;
 };
 
 class Bishop: public PieceBase {
 public:
-    explicit Bishop(PieceColor color);
+    explicit Bishop(PieceColor);
     QString type() const override;
 };
 
 class Queen: public PieceBase {
 public:
-    explicit Queen(PieceColor color);
+    explicit Queen(PieceColor);
     QString type() const override;
 };
 
 class King: public PieceBase {
 public:
-    explicit King(PieceColor color);
+    explicit King(PieceColor);
+    QString type() const override;
+};
+/*
+class Piece {
+public:
+    Piece();
+    virtual ~Piece();
+    virtual PieceColor color() const = 0;
+    virtual QString type() const = 0;
+
+    Piece& operator=(const Piece&) = delete;
+    Piece(const Piece&) = delete;
+};
+
+class PieceBase: public Piece {
+public:
+    explicit PieceBase(PieceColor);
+    PieceColor color() const override;
+
+protected:
+    PieceColor _color;
+};
+
+class Pawn: public PieceBase {
+public:
+    explicit Pawn(PieceColor);
     QString type() const override;
 };
 
+class Rook: public PieceBase {
+public:
+    explicit Rook(PieceColor);
+    QString type() const override;
+};
+
+class Knight: public PieceBase {
+public:
+    explicit Knight(PieceColor);
+    QString type() const override;
+};
+
+class Bishop: public PieceBase {
+public:
+    explicit Bishop(PieceColor);
+    QString type() const override;
+};
+
+class Queen: public PieceBase {
+public:
+    explicit Queen(PieceColor);
+    QString type() const override;
+};
+
+class King: public PieceBase {
+public:
+    explicit King(PieceColor);
+    QString type() const override;
+};
+*/
 #endif // __PIECESFJULVFJNSJKLSNJSKLVNVNSL__
 
