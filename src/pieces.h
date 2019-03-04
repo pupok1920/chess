@@ -8,7 +8,7 @@ class Piece {
 public:
     Piece();
     virtual ~Piece();
-    virtual PieceColor color() const;
+    virtual PieceColor color() const = 0;
     virtual QString type() const = 0;
 
     Piece& operator=(const Piece&) = delete;

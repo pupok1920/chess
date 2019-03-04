@@ -8,8 +8,8 @@
 
 class Square {
 public:
-    explicit Square(unsigned int index);
-    Square(unsigned int row, unsigned int column);
+    explicit Square(unsigned int);
+    Square(unsigned int, unsigned int);
     Square(): _index(0) {}
 
     unsigned int row() const {

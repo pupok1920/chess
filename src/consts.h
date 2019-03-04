@@ -5,12 +5,12 @@ enum {
     BOARD_SIZE = 8
 };
 
-enum PieceColor {
+enum class PieceColor {
     WHITE_COLOR,
     BLACK_COLOR
 };
 
-enum PieceType {
+enum class PieceType {
     PAWN = 1,
     ROOK = 2,
     KNIGHT = 3,
@@ -18,4 +18,17 @@ enum PieceType {
     QUEEN = 5,
     KING = 6
 };
+
+enum class RqstType {
+    CONNECTION,
+    MOVE
+};
+
+enum class AnswrType {
+    SUCCESS,
+    DENY,
+    CORRECT,
+    UPDATE
+};
+
 #endif // __CONSTSVJSNJSNJSNVSNVNSVNSLN__

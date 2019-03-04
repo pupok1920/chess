@@ -12,9 +12,11 @@
 #include <utility>
 
 #include "boarddata.h"
+#include "structs.h"
 #include "replaycommand.h"
 
 class QUndoStack;
+class QTcpServer;
 
 class BoardModel: public QAbstractListModel {
     Q_OBJECT
@@ -48,24 +50,28 @@ public:
 signals:
     void activePlayerChanged();
 
-protected:
+private:
     QHash<int, QByteArray> roleNames() const;
+
     QString cutFileName(const QString &fileName) const;
-    void changeModel(bool result, Square draggedFrom, Square draggedTo);
     bool isFileValid(QFile &file);
     bool isDataValid(QTextStream &in);
 
-private:
     void initialiseBoard(BoardData &data);
+    bool doConnectionRqst();
+    bool checkMove(const QJsonDocument &outDoc);
     PieceType getEnumPieceType(const QString &strType);
-    bool checkMove(PieceType pieceType, int draggedFrom, int draggedTo);
+    void changeModel(const Square &draggedFrom, const Square &draggedTo);
+    void doUpdates();
 
 private:
     QVector<QPair<int, int> > _moves;
     BoardData _data;
-    QUndoStack *_undoStack;
-
-    bool  _activePlayer;
+    bool  _activePlayer = true;
+    Player _playerInfo;
+    ServerInfo _serverInfo;
+    QUndoStack *_undoStack = nullptr;
+    QTcpServer *_receiverForUpdates = nullptr;
 };
 
 #endif // __BOARDMODELNJNBDJBNDLBNDLBNDKBNDKBNDKL__

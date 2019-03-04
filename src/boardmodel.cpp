@@ -1,13 +1,18 @@
-#include <QTcpSocket>
-#include <QAbstractSocket>
-#include <QHostAddress>
+#include <QtNetwork>
+
+//#include <QTcpSocket>
+//#include <QTcpServer>
+//#include <QAbstractSocket>
+//#include <QHostAddress>
 
 #include "boardmodel.h"
 
 BoardModel::BoardModel(QObject *parent)
-    : QAbstractListModel(parent),
-      _undoStack(new QUndoStack(this)),
-      _activePlayer(true) { }
+    : QAbstractListModel(parent) {
+      _serverInfo.addr = QHostAddress::LocalHost;
+      _serverInfo.port = 8880;
+      _undoStack = new QUndoStack(this);
+    }
 
 BoardModel::~BoardModel() { }
 
@@ -30,7 +35,7 @@ QVariant BoardModel::data(const QModelIndex &index, int role) const {
         }
         case ItemColorRole: {
             if(piece) {
-                return (piece->color() == WHITE_COLOR) ? "white" : "black";
+                return (piece->color() == PieceColor::WHITE_COLOR) ? "white" : "black";
             }
             else {
                 return "";
@@ -47,95 +52,200 @@ bool BoardModel::activePlayer() const {
 }
 
 void BoardModel::initialise() {
-    initialiseBoard(_data);
-    _activePlayer = true;
-    emit activePlayerChanged();
-    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
+    if(doConnectionRqst()) {
+      initialiseBoard(_data);
+      _activePlayer = true;
+      emit activePlayerChanged();
+      emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
+
+      _receiverForUpdates = new QTcpServer(this);
+      if(!_receiverForUpdates->listen(_playerInfo.addr, _playerInfo.port)) {
+        qDebug() << "Unable to start the receiver";
+        _receiverForUpdates->close();
+        return;
+      }
+      connect(_receiverForUpdates, &QTcpServer::newConnection, this, &BoardModel::doUpdates);
+
+      qDebug() << _receiverForUpdates->serverAddress();
+      qDebug() << _receiverForUpdates->serverPort();
+    }
+}
+
+bool BoardModel::doConnectionRqst() {
+
+    QTcpSocket *connectionRqst = new QTcpSocket(this);
+    connect(connectionRqst, &QAbstractSocket::disconnected, connectionRqst, &QObject::deleteLater);
+
+    connectionRqst->connectToHost(_serverInfo.addr, _serverInfo.port);
+    connectionRqst->waitForConnected();
+
+    QJsonObject outJson;
+    outJson["rqsttype"] = static_cast<double>(RqstType::CONNECTION);
+
+    QJsonDocument outDoc(outJson);
+    connectionRqst->write(outDoc.toJson());
+
+    connectionRqst->waitForReadyRead(-1);
+
+    QByteArray inData = connectionRqst->readAll();
+    QJsonDocument inDoc(QJsonDocument::fromJson(inData));
+    QJsonObject inJson(inDoc.object());
+
+
+    if(inJson.contains("answrtype") && inJson["answrtype"].isDouble()) {
+      AnswrType type = static_cast<AnswrType>(inJson["answrtype"].toInt());
+      switch(type) {
+        case AnswrType::SUCCESS: {
+          if(inJson.contains("playercolor") && inJson["playercolor"].isDouble()) {
+            _playerInfo.color = static_cast<PieceColor>(inJson["playercolor"].toInt());
+            _playerInfo.addr = connectionRqst->localAddress();
+            _playerInfo.port = connectionRqst->localPort();
+            connectionRqst->disconnectFromHost();
+            return true;
+          }
+        }
+        case AnswrType::DENY: {
+          connectionRqst->disconnectFromHost();
+          return false;
+        }
+        default:
+          return false;
+      }
+    }
+    return false;
+}
+
+void BoardModel::doUpdates() {
+  QTcpSocket *socket = _receiverForUpdates->nextPendingConnection();
+
+  connect(socket, &QAbstractSocket::disconnected, socket, &QObject::deleteLater);
+
+  socket->waitForReadyRead(-1);
+
+  QByteArray inData = socket->readAll();
+  QJsonDocument inDoc(QJsonDocument::fromJson(inData));
+  QJsonObject inJson(inDoc.object());
+
+  socket->disconnectFromHost();
+
+  if(inJson.contains("answrtype") && inJson["answrtype"].isDouble()) {
+    AnswrType type = static_cast<AnswrType>(inJson["answrtype"].toInt());
+    if(type != AnswrType::UPDATE)
+      return;
+    if(!(inJson.contains("intfrom") && inJson["intfrom"].isDouble()))
+      return;
+    if(!(inJson.contains("intto") && inJson["intto"].isDouble()))
+      return;
+
+    Square squareFrom = static_cast<Square>(inJson["intfrom"].toInt());
+    Square squareTo = static_cast<Square>(inJson["intto"].toInt());
+
+    changeModel(squareFrom, squareTo);
+  }
 }
 
 void BoardModel::move(int draggedFrom, int draggedTo) {
+    qDebug() << "move() is called";
 
     Square squareFrom = static_cast<Square>(draggedFrom);
     const Piece *pieceFrom = _data.at(squareFrom);
 
-    if(pieceFrom == 0) return;
-
-    if((_activePlayer == true && pieceFrom->color() != WHITE_COLOR)
-            || (_activePlayer == false && pieceFrom->color() != BLACK_COLOR)) return;
-
     Square squareTo = static_cast<Square>(draggedTo);
     const Piece *pieceTo = _data.at(squareTo);
 
-    if(pieceTo == 0 || pieceFrom->color() != pieceTo->color()) {
+    qDebug() << "after *pieceTo";
 
-        PieceType pieceType = getEnumPieceType(pieceFrom->type());
+    PieceType pieceType = getEnumPieceType(pieceFrom->type());
+    qDebug() << "after *pieceType";
 
-        bool result = checkMove(pieceType, draggedFrom, draggedTo);
-        changeModel(result, squareFrom, squareTo);
-        _moves.append(qMakePair(draggedFrom, draggedTo));
+    QJsonObject outJson;
+    qDebug() << "after json declaration";
+    outJson["rqsttype"] = static_cast<double>(RqstType::MOVE);
+    qDebug() << "after rqsttype";
+    outJson["colorfrom"] = static_cast<double>(pieceFrom->color());
+    qDebug() << "after colorfrom";
+    if(pieceTo)
+      outJson["colorto"] = static_cast<double>(pieceTo->color());
+      qDebug() << "after colorto";
+    outJson["piecetype"] = static_cast<double>(pieceType);
+    qDebug() << "after piecetype";
+    outJson["intfrom"] = static_cast<double>(draggedFrom);
+    qDebug() << "after intfrom";
+    outJson["intto"] = static_cast<double>(draggedTo);
+    qDebug() << "after intto";
+
+    QJsonDocument outDoc(outJson);
+    qDebug() << "after outDoc";
+
+
+    qDebug() << "before checkMove";
+    bool result = checkMove(outDoc);
+    if(result) {
+      qDebug() << "move true";
+      changeModel(squareFrom, squareTo);
+      _moves.append(qMakePair(draggedFrom, draggedTo));
     }
+    else return;
 }
 
 PieceType BoardModel::getEnumPieceType(const QString &strType) {
 
-      if(strType == "pawn") return PAWN;
+      if(strType == "pawn") return PieceType::PAWN;
 
-      if(strType == "rook") return ROOK;
+      if(strType == "rook") return PieceType::ROOK;
 
-      if(strType == "knight") return KNIGHT;
+      if(strType == "knight") return PieceType::KNIGHT;
 
-      if(strType == "bishop") return BISHOP;
+      if(strType == "bishop") return PieceType::BISHOP;
 
-      if(strType == "queen") return QUEEN;
+      if(strType == "queen") return PieceType::QUEEN;
 
-      if(strType == "king") return KING;
+      if(strType == "king") return PieceType::KING;
 }
 
-bool BoardModel::checkMove(PieceType pieceType, int draggedFrom, int draggedTo) {
+bool BoardModel::checkMove(const QJsonDocument &outDoc) {
+
+    AnswrType result;
 
     QTcpSocket *socket = new QTcpSocket(this);
+    connect(socket, &QAbstractSocket::disconnected, socket, &QObject::deleteLater);
 
-    socket->connectToHost(QHostAddress::LocalHost, 8880);
+    socket->connectToHost(_serverInfo.addr, _serverInfo.port);
     socket->waitForConnected();
 
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-
-    out << pieceType << draggedFrom << draggedTo;
-    socket->write(ba);
+    socket->write(outDoc.toJson());
     socket->waitForBytesWritten();
 
-    socket->waitForReadyRead();
-    ba.clear();
+    socket->waitForReadyRead(-1);
 
-    ba = socket->read(4);
-    char chrBa = ba[3];
-    int result = static_cast<int>(chrBa);
+    QByteArray inData = socket->readAll();
+    QJsonDocument inDoc(QJsonDocument::fromJson(inData));
+    QJsonObject inJson(inDoc.object());
 
-    connect(socket, &QAbstractSocket::disconnected, socket, &QObject::deleteLater);
     socket->disconnectFromHost();
 
-    return result ? true : false;
+    if(inJson.contains("answrtype") && inJson["answrtype"].isDouble())
+      result = static_cast<AnswrType>(inJson["answrtype"].toInt());
+
+    return result == AnswrType::CORRECT ? true : false;
 }
 
-void BoardModel::changeModel(bool result, Square draggedFrom, Square draggedTo) {
+void BoardModel::changeModel(const Square &draggedFrom, const Square &draggedTo) {
     const Piece *cur = _data.at(draggedFrom);
-    if(result) {
-        _data.remove(draggedTo);
-        _data.remove(draggedFrom);
-        _data.add(draggedTo, cur);
+    _data.remove(draggedTo);
+    _data.remove(draggedFrom);
+    _data.add(draggedTo, cur);
 
-        if(_activePlayer == false) {
-            _activePlayer = true;
-            emit activePlayerChanged();
-        }
-        else {
-            _activePlayer = false;
-            emit activePlayerChanged();
-        }
-
-        emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
+    if(_activePlayer == false) {
+        _activePlayer = true;
+        emit activePlayerChanged();
     }
+    else {
+        _activePlayer = false;
+        emit activePlayerChanged();
+    }
+
+    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
 }
 
 bool BoardModel::isFileValid(QFile &file) {
@@ -182,6 +292,10 @@ bool BoardModel::isFileValid(QFile &file) {
         }
         case 8: {
             errorMessage->showMessage("An unspecified error occurred.", "ErrorMessage");
+            return result = false;
+        }
+        default: {
+            errorMessage->showMessage("An error occurred.", "ErrorMessage");
             return result = false;
         }
     }
@@ -231,14 +345,16 @@ bool BoardModel::isDataValid(QTextStream &in) {
 
         if(pieceFrom == 0) return false;
 
-        if((_activePlayer == true && pieceFrom->color() != WHITE_COLOR)
-                || (_activePlayer == false && pieceFrom->color() != BLACK_COLOR)) return false;
+        if((_activePlayer == true && pieceFrom->color() != PieceColor::WHITE_COLOR)
+                || (_activePlayer == false && pieceFrom->color() != PieceColor::BLACK_COLOR)) return false;
 
 
         Square squareTo = static_cast<Square>(draggedTo);
         const Piece *pieceTo = _data.at(squareTo);
 
-        if(pieceTo == 0 || pieceFrom->color() != pieceTo->color()) {
+        if(pieceFrom->color() == pieceTo->color()) return false;
+
+        /*if(pieceTo == 0 || pieceFrom->color() != pieceTo->color()) {
             PieceType pieceType = getEnumPieceType(pieceFrom->type());
 
             bool result = checkMove(pieceType, draggedFrom, draggedTo);
@@ -258,7 +374,7 @@ bool BoardModel::isDataValid(QTextStream &in) {
             else {
                 return false;
             }
-        }
+        }*/
     }
     return true;
 }
@@ -299,7 +415,7 @@ void BoardModel::load(const QString &fileName) {
     }
     file.close();
 
-    for(unsigned i = 0; i < _moves.size(); ++i) {
+    for(int i = 0; i < _moves.size(); ++i) {
         ReplayCommand *cmd = new ReplayCommand(&_data, _moves[i], 0);
         _undoStack->push(cmd);
     }
@@ -362,8 +478,7 @@ QHash<int, QByteArray> BoardModel::roleNames() const{
     return roles;
 }
 
-QString BoardModel::cutFileName(const QString &fileName) const
-{
+QString BoardModel::cutFileName(const QString &fileName) const {
     QString fn = fileName;
     fn.replace("file://", "");
     return fn;
@@ -374,32 +489,31 @@ void BoardModel::initialiseBoard(BoardData &data) {
     data.clear();
 
     for(unsigned i = 0; i < BOARD_SIZE; ++i) {
-        data.add(Square(6, i), data.pawn(WHITE_COLOR));
-        data.add(Square(1, i), data.pawn(BLACK_COLOR));
+        data.add(Square(6, i), data.pawn(PieceColor::WHITE_COLOR));
+        data.add(Square(1, i), data.pawn(PieceColor::BLACK_COLOR));
     }
 
-    data.add(Square(7, 0), data.rook(WHITE_COLOR));
-    data.add(Square(7, 7), data.rook(WHITE_COLOR));
+    data.add(Square(7, 0), data.rook(PieceColor::WHITE_COLOR));
+    data.add(Square(7, 7), data.rook(PieceColor::WHITE_COLOR));
 
-    data.add(Square(0, 0), data.rook(BLACK_COLOR));
-    data.add(Square(0, 7), data.rook(BLACK_COLOR));
+    data.add(Square(0, 0), data.rook(PieceColor::BLACK_COLOR));
+    data.add(Square(0, 7), data.rook(PieceColor::BLACK_COLOR));
 
-    data.add(Square(7, 1), data.knight(WHITE_COLOR));
-    data.add(Square(7, 6), data.knight(WHITE_COLOR));
+    data.add(Square(7, 1), data.knight(PieceColor::WHITE_COLOR));
+    data.add(Square(7, 6), data.knight(PieceColor::WHITE_COLOR));
 
-    data.add(Square(0, 1), data.knight(BLACK_COLOR));
-    data.add(Square(0, 6), data.knight(BLACK_COLOR));
+    data.add(Square(0, 1), data.knight(PieceColor::BLACK_COLOR));
+    data.add(Square(0, 6), data.knight(PieceColor::BLACK_COLOR));
 
-    data.add(Square(7, 2), data.bishop(WHITE_COLOR));
-    data.add(Square(7, 5), data.bishop(WHITE_COLOR));
+    data.add(Square(7, 2), data.bishop(PieceColor::WHITE_COLOR));
+    data.add(Square(7, 5), data.bishop(PieceColor::WHITE_COLOR));
 
-    data.add(Square(0, 2), data.bishop(BLACK_COLOR));
-    data.add(Square(0, 5), data.bishop(BLACK_COLOR));
+    data.add(Square(0, 2), data.bishop(PieceColor::BLACK_COLOR));
+    data.add(Square(0, 5), data.bishop(PieceColor::BLACK_COLOR));
 
-    data.add(Square(7, 3), data.queen(WHITE_COLOR));
-    data.add(Square(0, 3), data.queen(BLACK_COLOR));
+    data.add(Square(7, 3), data.queen(PieceColor::WHITE_COLOR));
+    data.add(Square(0, 3), data.queen(PieceColor::BLACK_COLOR));
 
-    data.add(Square(7, 4), data.king(WHITE_COLOR));
-    data.add(Square(0, 4), data.king(BLACK_COLOR));
-
+    data.add(Square(7, 4), data.king(PieceColor::WHITE_COLOR));
+    data.add(Square(0, 4), data.king(PieceColor::BLACK_COLOR));
 }
