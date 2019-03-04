@@ -31,7 +31,7 @@ void Handler::handleConnection() {
     clientConnection->waitForReadyRead(-1);
 
     QByteArray inData = clientConnection->readAll();
-    //qDebug() << "ba: " << ba;
+    qDebug() << "inData: " << inData;
 
     QJsonDocument inDoc(QJsonDocument::fromJson(inData));
 
@@ -41,8 +41,8 @@ void Handler::handleConnection() {
 }
 
 void Handler::read(const QJsonObject &json, QTcpSocket *socket) {
-    if(json.contains("type") && json["type"].isDouble()) {
-      RqstType type = static_cast<RqstType>(json["type"].toInt());
+    if(json.contains("rqsttype") && json["rqsttype"].isDouble()) {
+      RqstType type = static_cast<RqstType>(json["rqsttype"].toInt());
       switch(type) {
         case RqstType::CONNECTION: doConnectNewPlayer(socket);
           break;
@@ -85,6 +85,7 @@ void Handler::doConnectNewPlayer(QTcpSocket *socket) {
     }
     else if(_whitePlayer.addr.isNull()) {
       _whitePlayer.addr = socket->peerAddress();
+      _whitePlayer.port = socket->peerPort();
       _whitePlayer.color = PieceColor::WHITE_COLOR;
 
       QJsonObject json;
@@ -95,6 +96,7 @@ void Handler::doConnectNewPlayer(QTcpSocket *socket) {
     }
     else {
       _blackPlayer.addr = socket->peerAddress();
+      _blackPlayer.port = socket->peerPort();
       _blackPlayer.color = PieceColor::WHITE_COLOR;
       _playersConnected = true;
       _activePlayer = &_whitePlayer;
@@ -110,8 +112,8 @@ void Handler::doConnectNewPlayer(QTcpSocket *socket) {
 void Handler::checkJson(const QJsonObject &json, QTcpSocket *socket) {
   if(!(json.contains("colorfrom") && json["colorfrom"].isDouble()))
     sendDeny(socket);
-  if(!(json.contains("colorto") && json["colorto"].isDouble()))
-    sendDeny(socket);
+  //if(!(json.contains("colorto") && json["colorto"].isDouble()))
+  //  sendDeny(socket);
   if(!(json.contains("piecetype") && json["piecetype"].isDouble()))
     sendDeny(socket);
   if(!(json.contains("intfrom") && json["intfrom"].isDouble()))
@@ -146,8 +148,9 @@ void Handler::doCheckMove(const QJsonObject &json, QTcpSocket *socket) {
 
   QJsonObject answrJson;
   answrJson["answrtype"] = static_cast<double>(AnswrType::CORRECT);
-  QJsonDocument outData(answrJson);
-  socket->write(outData.toJson());
+  QJsonDocument outDoc(answrJson);
+  socket->write(outDoc.toJson());
+  socket->waitForBytesWritten();
 
   QJsonObject updJson;
   updJson["answrtype"] = static_cast<double>(AnswrType::UPDATE);
