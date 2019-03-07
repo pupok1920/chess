@@ -9,7 +9,7 @@
 
 BoardModel::BoardModel(QObject *parent)
     : QAbstractListModel(parent) {
-      _serverInfo.addr = QHostAddress::LocalHost;
+      _serverInfo.addr = QHostAddress("172.31.83.67");
       _serverInfo.port = 8880;
       _undoStack = new QUndoStack(this);
     }
@@ -66,6 +66,7 @@ void BoardModel::initialise() {
       }
       connect(_receiverForUpdates, &QTcpServer::newConnection, this, &BoardModel::doUpdates);
 
+      qDebug() << "_receiverForUpdates started and has addr:";
       qDebug() << _receiverForUpdates->serverAddress();
       qDebug() << _receiverForUpdates->serverPort();
     }
@@ -78,6 +79,8 @@ bool BoardModel::doConnectionRqst() {
 
     connectionRqst->connectToHost(_serverInfo.addr, _serverInfo.port);
     connectionRqst->waitForConnected();
+    qDebug() << "connectionRqst connected to host: " << connectionRqst->peerAddress();
+    qDebug() << "from host: " << connectionRqst->localAddress();
 
     QJsonObject outJson;
     outJson["rqsttype"] = static_cast<double>(RqstType::CONNECTION);
@@ -90,7 +93,7 @@ bool BoardModel::doConnectionRqst() {
     QByteArray inData = connectionRqst->readAll();
     QJsonDocument inDoc(QJsonDocument::fromJson(inData));
     QJsonObject inJson(inDoc.object());
-
+    qDebug() << "inData in doConnectionRqst(): ";
 
     if(inJson.contains("answrtype") && inJson["answrtype"].isDouble()) {
       AnswrType type = static_cast<AnswrType>(inJson["answrtype"].toInt());
@@ -99,13 +102,15 @@ bool BoardModel::doConnectionRqst() {
           if(inJson.contains("playercolor") && inJson["playercolor"].isDouble()) {
             _playerInfo.color = static_cast<PieceColor>(inJson["playercolor"].toInt());
             _playerInfo.addr = connectionRqst->localAddress();
-            _playerInfo.port = connectionRqst->localPort();
+            _playerInfo.port = 8888;//connectionRqst->localPort();
             connectionRqst->disconnectFromHost();
+            qDebug() << "doConnectionRqst() was SUCCESS";
             return true;
           }
         }
         case AnswrType::DENY: {
           connectionRqst->disconnectFromHost();
+          qDebug() << "doConnectionRqst() was DENY";
           return false;
         }
         default:
@@ -127,6 +132,7 @@ void BoardModel::doUpdates() {
   QJsonObject inJson(inDoc.object());
 
   socket->disconnectFromHost();
+  qDebug() << "doUpdates() is called";
 
   if(inJson.contains("answrtype") && inJson["answrtype"].isDouble()) {
     AnswrType type = static_cast<AnswrType>(inJson["answrtype"].toInt());
@@ -153,35 +159,22 @@ void BoardModel::move(int draggedFrom, int draggedTo) {
     Square squareTo = static_cast<Square>(draggedTo);
     const Piece *pieceTo = _data.at(squareTo);
 
-    qDebug() << "after *pieceTo";
-
     PieceType pieceType = getEnumPieceType(pieceFrom->type());
-    qDebug() << "after *pieceType";
 
     QJsonObject outJson;
-    qDebug() << "after json declaration";
     outJson["rqsttype"] = static_cast<double>(RqstType::MOVE);
-    qDebug() << "after rqsttype";
     outJson["colorfrom"] = static_cast<double>(pieceFrom->color());
-    qDebug() << "after colorfrom";
     if(pieceTo)
       outJson["colorto"] = static_cast<double>(pieceTo->color());
-      qDebug() << "after colorto";
     outJson["piecetype"] = static_cast<double>(pieceType);
-    qDebug() << "after piecetype";
     outJson["intfrom"] = static_cast<double>(draggedFrom);
-    qDebug() << "after intfrom";
     outJson["intto"] = static_cast<double>(draggedTo);
-    qDebug() << "after intto";
 
     QJsonDocument outDoc(outJson);
-    qDebug() << "after outDoc";
 
-
-    qDebug() << "before checkMove";
     bool result = checkMove(outDoc);
     if(result) {
-      qDebug() << "move true";
+      qDebug() << "move is true";
       changeModel(squareFrom, squareTo);
       _moves.append(qMakePair(draggedFrom, draggedTo));
     }
