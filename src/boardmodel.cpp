@@ -12,6 +12,18 @@ BoardModel::BoardModel(QObject *parent)
       _serverInfo.addr = QHostAddress("172.31.83.67");
       _serverInfo.port = 8880;
       _undoStack = new QUndoStack(this);
+
+      _receiverForUpdates = new QTcpServer(this);
+      if(!_receiverForUpdates->listen(QHostAddress::AnyIPv4, 0)) {
+        qDebug() << "Unable to start the receiver";
+        _receiverForUpdates->close();
+        return;
+      }
+      connect(_receiverForUpdates, &QTcpServer::newConnection, this, &BoardModel::doUpdates);
+
+      qDebug() << "_receiverForUpdates started and has addr:";
+      qDebug() << _receiverForUpdates->serverAddress();
+      qDebug() << _receiverForUpdates->serverPort();
     }
 
 BoardModel::~BoardModel() { }
@@ -57,18 +69,6 @@ void BoardModel::initialise() {
       _activePlayer = true;
       emit activePlayerChanged();
       emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
-
-      _receiverForUpdates = new QTcpServer(this);
-      if(!_receiverForUpdates->listen(_playerInfo.addr, _playerInfo.port)) {
-        qDebug() << "Unable to start the receiver";
-        _receiverForUpdates->close();
-        return;
-      }
-      connect(_receiverForUpdates, &QTcpServer::newConnection, this, &BoardModel::doUpdates);
-
-      qDebug() << "_receiverForUpdates started and has addr:";
-      qDebug() << _receiverForUpdates->serverAddress();
-      qDebug() << _receiverForUpdates->serverPort();
     }
 }
 
@@ -84,16 +84,18 @@ bool BoardModel::doConnectionRqst() {
 
     QJsonObject outJson;
     outJson["rqsttype"] = static_cast<double>(RqstType::CONNECTION);
+    outJson["port"] = static_cast<double>(_receiverForUpdates->serverPort());
 
     QJsonDocument outDoc(outJson);
     connectionRqst->write(outDoc.toJson());
+    connectionRqst->waitForBytesWritten();
 
     connectionRqst->waitForReadyRead(-1);
 
     QByteArray inData = connectionRqst->readAll();
     QJsonDocument inDoc(QJsonDocument::fromJson(inData));
     QJsonObject inJson(inDoc.object());
-    qDebug() << "inData in doConnectionRqst(): ";
+    qDebug() << "inData in doConnectionRqst(): " << inData;
 
     if(inJson.contains("answrtype") && inJson["answrtype"].isDouble()) {
       AnswrType type = static_cast<AnswrType>(inJson["answrtype"].toInt());
@@ -101,8 +103,8 @@ bool BoardModel::doConnectionRqst() {
         case AnswrType::SUCCESS: {
           if(inJson.contains("playercolor") && inJson["playercolor"].isDouble()) {
             _playerInfo.color = static_cast<PieceColor>(inJson["playercolor"].toInt());
-            _playerInfo.addr = connectionRqst->localAddress();
-            _playerInfo.port = 8888;//connectionRqst->localPort();
+           // _playerInfo.addr = connectionRqst->localAddress();
+           // _playerInfo.port = 8888;//connectionRqst->localPort();
             connectionRqst->disconnectFromHost();
             qDebug() << "doConnectionRqst() was SUCCESS";
             return true;
