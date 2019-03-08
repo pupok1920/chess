@@ -171,6 +171,7 @@ void BoardModel::move(int draggedFrom, int draggedTo) {
     outJson["piecetype"] = static_cast<double>(pieceType);
     outJson["intfrom"] = static_cast<double>(draggedFrom);
     outJson["intto"] = static_cast<double>(draggedTo);
+    outJson["port"] = static_cast<double>(_receiverForUpdates->serverPort());
 
     QJsonDocument outDoc(outJson);
 
