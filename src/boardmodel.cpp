@@ -15,7 +15,7 @@ BoardModel::BoardModel(QObject *parent)
 
       _receiverForUpdates = new QTcpServer(this);
       if(!_receiverForUpdates->listen(QHostAddress::AnyIPv4, 0)) {
-        qDebug() << "Unable to start the receiver";
+        qDebug() << "Unable to start the receiver" << "\n";
         _receiverForUpdates->close();
         return;
       }
@@ -23,7 +23,7 @@ BoardModel::BoardModel(QObject *parent)
 
       qDebug() << "_receiverForUpdates started and has addr:";
       qDebug() << _receiverForUpdates->serverAddress();
-      qDebug() << _receiverForUpdates->serverPort();
+      qDebug() << _receiverForUpdates->serverPort() << "\n";
     }
 
 BoardModel::~BoardModel() { }
@@ -80,7 +80,7 @@ bool BoardModel::doConnectionRqst() {
     connectionRqst->connectToHost(_serverInfo.addr, _serverInfo.port);
     connectionRqst->waitForConnected();
     qDebug() << "connectionRqst connected to host: " << connectionRqst->peerAddress();
-    qDebug() << "from host: " << connectionRqst->localAddress();
+    qDebug() << "from host: " << connectionRqst->localAddress() << "\n";
 
     QJsonObject outJson;
     outJson["rqsttype"] = static_cast<double>(RqstType::CONNECTION);
@@ -106,13 +106,13 @@ bool BoardModel::doConnectionRqst() {
            // _playerInfo.addr = connectionRqst->localAddress();
            // _playerInfo.port = 8888;//connectionRqst->localPort();
             connectionRqst->disconnectFromHost();
-            qDebug() << "doConnectionRqst() was SUCCESS";
+            qDebug() << "doConnectionRqst() was SUCCESS" << "\n";
             return true;
           }
         }
         case AnswrType::DENY: {
           connectionRqst->disconnectFromHost();
-          qDebug() << "doConnectionRqst() was DENY";
+          qDebug() << "doConnectionRqst() was DENY" << "\n";
           return false;
         }
         default:
@@ -177,7 +177,7 @@ void BoardModel::move(int draggedFrom, int draggedTo) {
 
     bool result = checkMove(outDoc);
     if(result) {
-      qDebug() << "move is true";
+      qDebug() << "move is true" << "\n";
       changeModel(squareFrom, squareTo);
       _moves.append(qMakePair(draggedFrom, draggedTo));
     }
