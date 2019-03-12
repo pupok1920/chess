@@ -53,7 +53,7 @@ Item {
             Image {
                 id: itemImage
                 source: {
-                    if(item_type != "") {
+                    if(item_type !== "") {
                         "qrc:/assets/" + item_type + "_" + item_color + ".png"
                     }
                     else {""}
@@ -64,7 +64,7 @@ Item {
             states: [
                 State {
                     name: "inDrag"
-                    when: index == view.draggedFrom
+                    when: index === view.draggedFrom
                     PropertyChanges {
                         target: itemImage; parent: dndContainer
                     }
@@ -86,42 +86,52 @@ Item {
         id: indicItem
         x: 20
         y: 485
-        property bool activePlayer: boardModel.activePlayer
+        property int activePlayer: boardModel.activePlayer
+        property int playerColor: boardModel.playerColor
+
+        property int whiteColor: 0
+        property int blackColor: 1
 
         Rectangle {
             id: indicRect
             width: 30
             height: 30
             border.color: "red"
-            x: 145
         }
         Text {
             id: indicText
             font.family: "Helvetica"
-            font.pointSize: 12
+            font.pointSize: 16
             color: "black"
+            x: 35
             y: 5
         }
 
         states: [
             State {
                 name: "WHITEMOVE"
-                when: indicItem.activePlayer == true
+                when: indicItem.activePlayer === indicItem.whiteColor
                 PropertyChanges {
-                    target: indicRect; color: "white"
+                  target: indicRect; color: "white"
                 }
                 PropertyChanges {
-                    target: indicText; text: "white's move"
+                  target: indicText; text: if(indicItem.activePlayer === indicItem.playerColor) {
+                    "your move"
+                  }
+                  else { "enemy's move"}
                 }
             },
             State {
                 name: "BLACKMOVE"
-                when: indicItem.activePlayer == false
+                when: indicItem.activePlayer === indicItem.blackColor
                 PropertyChanges {
-                    target: indicRect; color: "black"
+                  target: indicRect; color: "black"
                 }
                 PropertyChanges {
-                    target: indicText; text: "black's move"
+                  target: indicText; text: if(indicItem.activePlayer === indicItem.playerColor) {
+                    "your move"
+                  }
+                  else { "enemy's move"}
                 }
             }
         ]
