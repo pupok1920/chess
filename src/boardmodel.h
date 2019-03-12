@@ -18,6 +18,7 @@
 class QUndoStack;
 class QTcpServer;
 
+
 class BoardModel: public QAbstractListModel {
     Q_OBJECT
 
@@ -26,15 +27,23 @@ class BoardModel: public QAbstractListModel {
         ItemColorRole
     };
 
-    Q_PROPERTY(bool activePlayer READ activePlayer NOTIFY activePlayerChanged)
+    Q_PROPERTY(Color activePlayer READ activePlayer NOTIFY activePlayerChanged)
+    Q_PROPERTY(Color playerColor READ playerColor NOTIFY playerColorChanged)
 
 public:
     explicit BoardModel(QObject *parent = nullptr);
     ~BoardModel();
 
+    enum class Color {
+      White,
+      Black
+    };
+    Q_ENUM(Color)
+
     int rowCount(const QModelIndex &parent) const override;
     QVariant data(const QModelIndex &index, int role) const override;
-    bool activePlayer() const;
+    Color activePlayer() const;
+    Color playerColor() const;
 
     Q_INVOKABLE void initialise();
     Q_INVOKABLE void move(int draggedFrom, int draggedTo);
@@ -49,6 +58,7 @@ public:
 
 signals:
     void activePlayerChanged();
+    void playerColorChanged();
 
 private:
     QHash<int, QByteArray> roleNames() const;
@@ -67,11 +77,10 @@ private:
 private:
     QVector<QPair<int, int> > _moves;
     BoardData _data;
-    bool  _activePlayer = true;
+    Color  _activePlayer = Color::White;
     Player _playerInfo;
     ServerInfo _serverInfo;
     QUndoStack *_undoStack = nullptr;
     QTcpServer *_receiverForUpdates = nullptr;
 };
-
 #endif // __BOARDMODELNJNBDJBNDLBNDLBNDKBNDKBNDKL__

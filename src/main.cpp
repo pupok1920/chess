@@ -6,7 +6,7 @@
 #include <QtQuick/QQuickView>
 
 int main(int argc, char *argv[])
-{   
+{
     struct QGuiApplicationMy : public QApplication {
         QGuiApplicationMy(int argc, char **argv) : QApplication(argc, argv) {}
     } app(argc, argv);

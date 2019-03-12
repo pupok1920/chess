@@ -59,14 +59,19 @@ QVariant BoardModel::data(const QModelIndex &index, int role) const {
     }
 }
 
-bool BoardModel::activePlayer() const {
+BoardModel::Color BoardModel::activePlayer() const {
     return _activePlayer;
+}
+
+BoardModel::Color BoardModel::playerColor() const {
+    return _playerInfo.color == PieceColor::WHITE_COLOR ? Color::White : Color::Black;
 }
 
 void BoardModel::initialise() {
     if(doConnectionRqst()) {
       initialiseBoard(_data);
-      _activePlayer = true;
+      _activePlayer = Color::White;
+      emit playerColorChanged();
       emit activePlayerChanged();
       emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
     }
@@ -103,8 +108,6 @@ bool BoardModel::doConnectionRqst() {
         case AnswrType::SUCCESS: {
           if(inJson.contains("playercolor") && inJson["playercolor"].isDouble()) {
             _playerInfo.color = static_cast<PieceColor>(inJson["playercolor"].toInt());
-           // _playerInfo.addr = connectionRqst->localAddress();
-           // _playerInfo.port = 8888;//connectionRqst->localPort();
             connectionRqst->disconnectFromHost();
             qDebug() << "doConnectionRqst() was SUCCESS" << "\n";
             return true;
@@ -155,8 +158,12 @@ void BoardModel::doUpdates() {
 void BoardModel::move(int draggedFrom, int draggedTo) {
     qDebug() << "move() is called";
 
+    qDebug() << "draggedFrom: " << draggedFrom;
+    qDebug() << "draggedTo: " << draggedTo;
     Square squareFrom = static_cast<Square>(draggedFrom);
     const Piece *pieceFrom = _data.at(squareFrom);
+    if(!pieceFrom)
+      return;
 
     Square squareTo = static_cast<Square>(draggedTo);
     const Piece *pieceTo = _data.at(squareTo);
@@ -232,12 +239,12 @@ void BoardModel::changeModel(const Square &draggedFrom, const Square &draggedTo)
     _data.remove(draggedFrom);
     _data.add(draggedTo, cur);
 
-    if(_activePlayer == false) {
-        _activePlayer = true;
+    if(_activePlayer == Color::Black) {
+        _activePlayer = Color::White;
         emit activePlayerChanged();
     }
     else {
-        _activePlayer = false;
+        _activePlayer = Color::Black;
         emit activePlayerChanged();
     }
 
@@ -330,7 +337,7 @@ bool BoardModel::isFileValid(QFile &file) {
 
 bool BoardModel::isDataValid(QTextStream &in) {
     initialiseBoard(_data);
-    _activePlayer = true;
+    _activePlayer = Color::White;
 
     while(!in.atEnd()) {
 
@@ -341,8 +348,8 @@ bool BoardModel::isDataValid(QTextStream &in) {
 
         if(pieceFrom == 0) return false;
 
-        if((_activePlayer == true && pieceFrom->color() != PieceColor::WHITE_COLOR)
-                || (_activePlayer == false && pieceFrom->color() != PieceColor::BLACK_COLOR)) return false;
+        if((_activePlayer == Color::White && pieceFrom->color() != PieceColor::WHITE_COLOR)
+                || (_activePlayer == Color::Black && pieceFrom->color() != PieceColor::BLACK_COLOR)) return false;
 
 
         Square squareTo = static_cast<Square>(draggedTo);
@@ -426,12 +433,12 @@ void BoardModel::redo() {
     _undoStack->redo();
 
 
-    if(_activePlayer == false) {
-        _activePlayer = true;
+    if(_activePlayer == Color::Black) {
+        _activePlayer = Color::White;
         emit activePlayerChanged();
     }
     else {
-        _activePlayer = false;
+        _activePlayer = Color::Black;
         emit activePlayerChanged();
     }
 
@@ -447,12 +454,12 @@ void BoardModel::undo() {
 
     _undoStack->undo();
 
-    if(_activePlayer == false) {
-        _activePlayer = true;
+    if(_activePlayer == Color::Black) {
+        _activePlayer = Color::White;
         emit activePlayerChanged();
     }
     else {
-        _activePlayer = false;
+        _activePlayer = Color::Black;
         emit activePlayerChanged();
     }
 
