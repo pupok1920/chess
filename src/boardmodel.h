@@ -1,23 +1,16 @@
 #ifndef __BOARDMODELNJNBDJBNDLBNDLBNDKBNDKBNDKL__
 #define __BOARDMODELNJNBDJBNDLBNDLBNDKBNDKBNDKL__
 #include <QAbstractListModel>
-#include <QFile>
-#include <QFileDevice>
-#include <QFileInfo>
-#include <QErrorMessage>
-#include <QTextStream>
-#include <QPair>
-#include <QVector>
 #include <QDebug>
 #include <utility>
 
 #include "boarddata.h"
 #include "structs.h"
 #include "replaycommand.h"
+#include "filehandler.h"
 
 class QUndoStack;
 class QTcpServer;
-
 
 class BoardModel: public QAbstractListModel {
     Q_OBJECT
@@ -63,9 +56,7 @@ signals:
 private:
     QHash<int, QByteArray> roleNames() const;
 
-    QString cutFileName(const QString &fileName) const;
-    bool isFileValid(QFile &file);
-    bool isDataValid(QTextStream &in);
+    bool isLoadedDataValid(const QVector<QPair<int, int> > &moves);
 
     void initialiseBoard(BoardData &data);
     bool doConnectionRqst();

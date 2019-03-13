@@ -5,8 +5,6 @@
 ReplayCommand::ReplayCommand(BoardData *data, QPair<int, int> &move, QUndoCommand *parent)
     : QUndoCommand(parent),
       _data(data),
-      _from(Square(move.second)),
-      _to(Square(move.first)),
       _removedCur(nullptr) {
       _from = static_cast<Square>(move.second);
       _to = static_cast<Square>(move.first);

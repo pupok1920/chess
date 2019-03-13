@@ -148,10 +148,13 @@ void BoardModel::doUpdates() {
     if(!(inJson.contains("intto") && inJson["intto"].isDouble()))
       return;
 
-    Square squareFrom = static_cast<Square>(inJson["intfrom"].toInt());
-    Square squareTo = static_cast<Square>(inJson["intto"].toInt());
+    int draggedFrom = inJson["intfrom"].toInt();
+    int draggedTo = inJson["intto"].toInt();
+    Square squareFrom = static_cast<Square>(draggedFrom);
+    Square squareTo = static_cast<Square>(draggedTo);
 
     changeModel(squareFrom, squareTo);
+    _moves.append(qMakePair(draggedFrom, draggedTo));
   }
 }
 
@@ -251,173 +254,68 @@ void BoardModel::changeModel(const Square &draggedFrom, const Square &draggedTo)
     emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
 }
 
-bool BoardModel::isFileValid(QFile &file) {
+bool BoardModel::isLoadedDataValid(const QVector<QPair<int, int> > &moves) {
+  qDebug() << "dive into isDataValid()";
+  initialiseBoard(_data);
+  _activePlayer = Color::White;
 
-    bool result = true;
-    QErrorMessage *errorMessage = new QErrorMessage();
+  for(int i = 0; i < moves.size(); ++i) {
 
-    if(file.exists() == false) {
-        errorMessage->showMessage("The file doesn't exist.", "ErrorMessage");
-        return result = false;
+    int draggedFrom = moves[i].second;
+    int draggedTo = moves[i].first;
+    Square squareFrom = static_cast<Square>(draggedFrom);
+    const Piece *pieceFrom = _data.at(squareFrom);
+    qDebug() << draggedFrom;
+    qDebug() << draggedTo;
+
+    if(!pieceFrom) return false;
+
+    if((_activePlayer == Color::White && pieceFrom->color() != PieceColor::WHITE_COLOR)
+        || (_activePlayer == Color::Black && pieceFrom->color() != PieceColor::BLACK_COLOR)) return false;
+
+    Square squareTo = static_cast<Square>(draggedTo);
+    const Piece *pieceTo = _data.at(squareTo);
+
+    if(pieceTo)
+      if(pieceFrom->color() == pieceTo->color()) return false;
+
+    const Piece *cur = _data.at(squareFrom);
+    _data.remove(squareTo);
+    _data.remove(squareFrom);
+    _data.add(squareTo, cur);
+    if(_activePlayer == Color::Black) {
+      _activePlayer = Color::White;
     }
-
-    QFileInfo fi = file.fileName();
-    if(fi.suffix() != "txt") {
-        errorMessage->showMessage("The type of the file isn't '.txt'", "ErrorMessage");
-         return result = false;
+    else {
+      _activePlayer = Color::Black;
     }
-
-    enum QFileDevice::FileError fault = file.error();
-    switch(fault) {
-        case 1: {
-            errorMessage->showMessage("An error occurred when reading from the file.", "ErrorMessage");
-            return result = false;
-        }
-        case 3: {
-            errorMessage->showMessage("A fatal error occurred.", "ErrorMessage");
-            return result = false;
-        }
-        case 4: {
-            errorMessage->showMessage("Out of resources (e.g., too many open files, out of memory, etc.)", "ErrorMessage");
-            return result = false;
-        }
-        case 5: {
-            errorMessage->showMessage("The file could not be opened.", "ErrorMessage");
-            return result = false;
-        }
-        case 6: {
-            errorMessage->showMessage("The operation was aborted.", "ErrorMessage");
-            return result = false;
-        }
-        case 7: {
-            errorMessage->showMessage("A timeout occurred.", "ErrorMessage");
-            return result = false;
-        }
-        case 8: {
-            errorMessage->showMessage("An unspecified error occurred.", "ErrorMessage");
-            return result = false;
-        }
-        default: {
-            errorMessage->showMessage("An error occurred.", "ErrorMessage");
-            return result = false;
-        }
-    }
-
-    QTextStream in(&file);
-    if(in.readLine().toInt() == 0) {
-        errorMessage->showMessage("Wrong file. Try to use another one.", "ErrorMessage");
-        return result = false;
-    }
-    in.seek(0);
-
-    unsigned int sum = 0;
-    while(!in.atEnd()) {
-        if(in.readLine().toInt() > 63) {
-            errorMessage->showMessage("Bad file. Try to use another one.", "ErrorMessage");
-            return result = false;
-        }
-        ++sum;
-    }
-    in.seek(0);
-
-    if(sum % 2) {
-        errorMessage->showMessage("Something wrong with that file. Try to use another one.", "ErrorMessage");
-        return result = false;
-    }
-
-    bool testData = isDataValid(in);
-    if(!testData) {
-        errorMessage->showMessage("The file contains incorrect data. Try to use another one.", "ErrorMessage");
-        return result = false;
-    }
-    file.seek(0);
-
-    return result;
-}
-
-bool BoardModel::isDataValid(QTextStream &in) {
-    initialiseBoard(_data);
-    _activePlayer = Color::White;
-
-    while(!in.atEnd()) {
-
-        int draggedFrom = in.readLine().toInt();
-        int draggedTo = in.readLine().toInt();
-        Square squareFrom = static_cast<Square>(draggedFrom);
-        const Piece *pieceFrom = _data.at(squareFrom);
-
-        if(pieceFrom == 0) return false;
-
-        if((_activePlayer == Color::White && pieceFrom->color() != PieceColor::WHITE_COLOR)
-                || (_activePlayer == Color::Black && pieceFrom->color() != PieceColor::BLACK_COLOR)) return false;
-
-
-        Square squareTo = static_cast<Square>(draggedTo);
-        const Piece *pieceTo = _data.at(squareTo);
-
-        if(pieceFrom->color() == pieceTo->color()) return false;
-
-        /*if(pieceTo == 0 || pieceFrom->color() != pieceTo->color()) {
-            PieceType pieceType = getEnumPieceType(pieceFrom->type());
-
-            bool result = checkMove(pieceType, draggedFrom, draggedTo);
-
-            const Piece *cur = _data.at(squareFrom);
-            if(result) {
-                _data.remove(squareTo);
-                _data.remove(squareFrom);
-                _data.add(squareTo, cur);
-                if(_activePlayer == false) {
-                    _activePlayer = true;
-                }
-                else {
-                    _activePlayer = false;
-                }
-            }
-            else {
-                return false;
-            }
-        }*/
-    }
-    return true;
+  }
+  qDebug() << "isDataValid(): true" << "\n";
+  return true;
 }
 
 void BoardModel::save(const QString &fileName) {
-    QString fn = cutFileName(fileName);
-    QFile file(fn);
-    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        return;
-    }
-    QTextStream out(&file);
-    for(int i = 0; i < _moves.size(); ++i) {
-        out << _moves[i].first << "\n";
-        out << _moves[i].second << "\n";
-    }
-    file.close();
-    //qDebug() << _moves;
+    //FileHandler fileHandler;
+    //if(!FileHandler::save(fileName, _moves))
+    bool res = FileHandler::save(fileName, _moves);
+    if(!res)
+        qDebug() << "couldn't save data to file";
 }
 
 void BoardModel::load(const QString &fileName) {
-    QString fn = cutFileName(fileName);
-    QFile file(fn);
-
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    //FileHandler fileHandler;
+    if(!FileHandler::load(fileName, _moves))
         return;
-    }
 
-    bool trueFile = isFileValid(file);
-    if(!trueFile) {
+    if(!isLoadedDataValid(_moves))
         return;
-    }
 
-    clear();
-    initialise();
-    QTextStream in(&file);
-    while(!in.atEnd()) {
-        _moves.append(qMakePair(in.readLine().toInt(), in.readLine().toInt()));
-    }
-    file.close();
+    initialiseBoard(_data);
+    _activePlayer = Color::White;
+    emit activePlayerChanged();
+    emit dataChanged(index(0,0), index(BOARD_SIZE * BOARD_SIZE - 1, 0));
 
+    _undoStack->clear();
     for(int i = 0; i < _moves.size(); ++i) {
         ReplayCommand *cmd = new ReplayCommand(&_data, _moves[i], 0);
         _undoStack->push(cmd);
@@ -479,12 +377,6 @@ QHash<int, QByteArray> BoardModel::roleNames() const{
     roles[ItemTypeRole] = "item_type";
     roles[ItemColorRole] = "item_color";
     return roles;
-}
-
-QString BoardModel::cutFileName(const QString &fileName) const {
-    QString fn = fileName;
-    fn.replace("file://", "");
-    return fn;
 }
 
 void BoardModel::initialiseBoard(BoardData &data) {
