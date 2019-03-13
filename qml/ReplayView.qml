@@ -52,42 +52,40 @@ Item {
             id: indicItem
             x: 20
             y: 485
-            property bool activePlayer: boardModel.activePlayer
+            property int activePlayer: boardModel.activePlayer
+
+            property int whiteColor: 0
+            property int blackColor: 1
 
             Rectangle {
                 id: indicRect
                 width: 30
                 height: 30
                 border.color: "red"
-                x: 145
             }
             Text {
                 id: indicText
+                text: "'s move"
                 font.family: "Helvetica"
-                font.pointSize: 12
+                font.pointSize: 16
                 color: "black"
+                x: 35
                 y: 5
             }
 
             states: [
                 State {
                     name: "WHITEMOVE"
-                    when: indicItem.activePlayer == true
+                    when: indicItem.activePlayer === indicItem.whiteColor
                     PropertyChanges {
                         target: indicRect; color: "white"
-                    }
-                    PropertyChanges {
-                        target: indicText; text: "White's move"
                     }
                 },
                 State {
                     name: "BLACKMOVE"
-                    when: indicItem.activePlayer == false
+                    when: indicItem.activePlayer === indicItem.blackColor
                     PropertyChanges {
                         target: indicRect; color: "black"
-                    }
-                    PropertyChanges {
-                        target: indicText; text: "Black's move"
                     }
                 }
             ]
@@ -102,19 +100,19 @@ Item {
         onClicked: parent.homeClicked()
     }
     Button {
-        id: redoButton
-        text: "Next"
-        tooltip: qsTr("next")
-        x: 300
-        y: 485
-        onClicked: parent.redoClicked()
-    }
-    Button {
         id: undoButton
         text: "Prev"
         tooltip: qsTr("prev")
-        x: 385
+        x: 300
         y: 485
         onClicked: parent.undoClicked()
+    }
+    Button {
+        id: redoButton
+        text: "Next"
+        tooltip: qsTr("next")
+        x: 385
+        y: 485
+        onClicked: parent.redoClicked()
     }
 }

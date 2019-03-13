@@ -15,13 +15,13 @@ Item {
           source: "qrc:/assets/start.jpg"
         }
     }
-
     Button {
         id: playButton
         text: "Play"
         tooltip: qsTr("play")
-        x: 40
-        y: 485
+        anchors.left: startUpImage.left
+        anchors.leftMargin: 30
+        y: 486
         //iconSource:
         onClicked: parent.playClicked()
     }
@@ -29,8 +29,9 @@ Item {
         id: loadButton
         text: "Load Game"
         tooltip: qsTr("load")
-        x: 140
-        y: 485
+        anchors.right: startUpImage.right
+        anchors.rightMargin: 30
+        y: 486
         //iconSource:
         onClicked: parent.loadClicked()
     }
