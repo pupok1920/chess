@@ -1,16 +1,26 @@
+#include <cstdlib>
+
 #include "pieces.h"
 
 Piece::Piece() {}
 
 Piece::~Piece() {}
 
-Pawn::Pawn():Piece() {}
+Pawn::Pawn():Piece() :_firstMove(true) {}
 
 bool Pawn::isMoveValid(int oldX, int oldY, int newX, int newY) const {
     if(abs(oldY - newY) != 1 || abs(oldX - newX) > 1)
         return false;
     else
         return true;
+}
+
+bool Pawn::isFirstMove() const {
+    return _firstMove;
+}
+
+void Pawn::setFirstMoveState(bool state) {
+    _firstMove = state;
 }
 
 Rook::Rook():Piece() {}

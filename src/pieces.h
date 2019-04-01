@@ -1,6 +1,5 @@
 #ifndef __PIECESFJULVFJNSJKLSNJSKLVNVNSL__
 #define __PIECESFJULVFJNSJKLSNJSKLVNVNSL__
-#include <cstdlib>
 
 class Piece {
 public:
@@ -16,6 +15,12 @@ class Pawn: public Piece {
 public:
     Pawn();
     bool isMoveValid(int, int, int, int) const override;
+
+    bool isFirstMove() const;
+    void setFirstMoveState(bool);
+
+private:
+    bool _firstMove;
 };
 
 class Rook: public Piece {
@@ -47,6 +52,4 @@ public:
     King();
     bool isMoveValid(int, int, int, int) const override;
 };
-
 #endif // __PIECESFJULVFJNSJKLSNJSKLVNVNSL__
-

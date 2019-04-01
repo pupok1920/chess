@@ -1,6 +1,5 @@
 #ifndef __DataNJGDNBSLNDSGNBDJKNBDNBDGKJBNDKJF__
 #define __DataNJGDNBSLNDSGNBDJKNBDNBDGKJBNDKJF__
-#include <QCoreApplication>
 
 #include "consts.h"
 #include "pieces.h"
@@ -24,6 +23,4 @@ private:
     Queen _queen;
     King _king;
 };
-
 #endif // __DataNJGDNBSLNDSGNBDJKNBDNBDGKJBNDKJF__
-
