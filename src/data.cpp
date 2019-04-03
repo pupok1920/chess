@@ -4,7 +4,7 @@ Data::Data() {}
 
 Data::~Data() {}
 
-const Piece *Data::type(const PieceType &pieceType) const {
+Piece *Data::type(const PieceType &pieceType) {
     switch(pieceType) {
       case PieceType::PAWN: return &_pawn;
           break;

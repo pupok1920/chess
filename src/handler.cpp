@@ -190,7 +190,7 @@ void Handler::doCheckMove(const QJsonObject &json, QTcpSocket *socket) {
   int newX = intTo % BOARD_SIZE;
   int newY = intTo / BOARD_SIZE;
 
-  const Piece *piece = _data.type(pieceType);
+  Piece *piece = _data.type(pieceType);
   if(!piece->isMoveValid(oldX, oldY, newX, newY)) {
     sendDeny(socket);
     qDebug() << "isMoveValid" << "\n";

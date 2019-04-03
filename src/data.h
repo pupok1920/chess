@@ -10,7 +10,7 @@ public:
     Data();
     ~Data();
 
-    const Piece *type(const PieceType&) const;
+    Piece *type(const PieceType&);
 
     Data& operator=(const Data&) = delete;
     Data(const Data&) = delete;
