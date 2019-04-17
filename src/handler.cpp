@@ -194,7 +194,7 @@ void Handler::doCheckMove(const QJsonObject &json, QTcpSocket *socket) {
       return;
     }
 
-  //PieceType pieceType = static_cast<PieceType>(json["piecetype"].toInt());
+  ///PieceType pieceType = static_cast<PieceType>(json["piecetype"].toInt());
   int intFrom = json["intfrom"].toInt();
   int intTo = json["intto"].toInt();
 
