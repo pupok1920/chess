@@ -1,12 +1,23 @@
+#include <QDebug>
 #include <cstdlib>
 
 #include "pieces.h"
 
-Piece::Piece() {}
+Piece::Piece() {
+    qDebug() << "Piece constructor\n";
+}
 
-Piece::~Piece() {}
+Piece::~Piece() {
+    qDebug() << "Piece destructor\n";
+}
 
-Pawn::Pawn():Piece(), _firstMove(true) {}
+Pawn::Pawn():Piece(), _firstMove(true) {
+    qDebug() << "Pawn constructor\n";
+}
+
+Pawn::~Pawn() {
+    qDebug() << "Pawn destructor\n";
+}
 
 bool Pawn::isMoveValid(int oldX, int oldY, int newX, int newY) {
     if(isFirstMove()) {

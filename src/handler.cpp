@@ -8,7 +8,7 @@ Handler::Handler(QObject *parent)
     : QObject(parent) {
 
     tcpServer = new QTcpServer(this);
-    if (!tcpServer->listen(QHostAddress("172.31.83.67"), 8880)) {
+    if (!tcpServer->listen(QHostAddress::Any, 8880)) {
         qDebug() << "Unable to start the server";
         tcpServer->close();
         return;
@@ -16,9 +16,22 @@ Handler::Handler(QObject *parent)
 
     connect(tcpServer, &QTcpServer::newConnection, this, &Handler::handleConnection);
 
-    qDebug() << tcpServer->serverAddress();
-    qDebug() << tcpServer->serverPort() << "\n";
+    QString ipAddr;
+    QList<QHostAddress> ipAddrList = QNetworkInterface::allAddresses();
+    for(auto it : ipAddrList) {
+        if(it != QHostAddress::LocalHost && it.toIPv4Address()) {
+            ipAddr = it.toString();
+            break;
+        }
+    }
+    if(ipAddr.isEmpty()) {
+        ipAddr = QHostAddress(QHostAddress::LocalHost).toString();
+    }
 
+    qDebug() << "serverAddress: " << ipAddr;
+    qDebug() << "serverPort: " << tcpServer->serverPort() << "\n";
+
+    initialiseData(_data);
 }
 
 Handler::~Handler() { }
@@ -181,7 +194,7 @@ void Handler::doCheckMove(const QJsonObject &json, QTcpSocket *socket) {
       return;
     }
 
-  PieceType pieceType = static_cast<PieceType>(json["piecetype"].toInt());
+  //PieceType pieceType = static_cast<PieceType>(json["piecetype"].toInt());
   int intFrom = json["intfrom"].toInt();
   int intTo = json["intto"].toInt();
 
@@ -190,10 +203,14 @@ void Handler::doCheckMove(const QJsonObject &json, QTcpSocket *socket) {
   int newX = intTo % BOARD_SIZE;
   int newY = intTo / BOARD_SIZE;
 
-  Piece *piece = _data.type(pieceType);
+  Square squareFrom = static_cast<Square>(intFrom);
+  //auto piece = std::make_shared<Piece>(_data.at(squareFrom));
+  auto piece = _data.at(squareFrom);
+  if(!piece)
+      qDebug() << "*piece is \"false\"";
   if(!piece->isMoveValid(oldX, oldY, newX, newY)) {
     sendDeny(socket);
-    qDebug() << "isMoveValid" << "\n";
+    qDebug() << "isMoveValid false" << "\n";
     return;
   }
 
@@ -210,6 +227,48 @@ void Handler::doCheckMove(const QJsonObject &json, QTcpSocket *socket) {
   updJson["intto"] = static_cast<double>(intTo);
   sendUpd(updJson);
 
-  _activePlayer =
-    (_activePlayer->port == _whitePlayer.port) ? &_blackPlayer : &_whitePlayer;
+  Square squareTo = static_cast<Square>(intTo);
+  changeModel(squareFrom, squareTo);
+}
+
+void Handler::changeModel(const Square &squareFrom, const Square &squareTo) {
+    _data.replace(squareFrom, squareTo);
+    _activePlayer =
+        (_activePlayer->port == _whitePlayer.port) ? &_blackPlayer : &_whitePlayer;
+}
+bool Handler::isPlayersConnected() {
+    return _playersConnected;
+}
+
+void Handler::initialiseData(Data &data) {
+    data.clear();
+
+    for(unsigned i = 0; i < BOARD_SIZE; ++i) {
+        data.add<Pawn>(Square(6, i));
+        data.add<Pawn>(Square(1, i));
+    }
+
+    data.add<Rook>(Square(7, 0));
+    data.add<Rook>(Square(7, 7));
+
+    data.add<Rook>(Square(0, 0));
+    data.add<Rook>(Square(0, 7));
+
+    data.add<Knight>(Square(7, 1));
+    data.add<Knight>(Square(7, 6));
+
+    data.add<Knight>(Square(0, 1));
+    data.add<Knight>(Square(0, 6));
+
+    data.add<Bishop>(Square(7, 2));
+    data.add<Bishop>(Square(7, 5));
+
+    data.add<Bishop>(Square(0, 2));
+    data.add<Bishop>(Square(0, 5));
+
+    data.add<Queen>(Square(7, 3));
+    data.add<Queen>(Square(0, 3));
+
+    data.add<King>(Square(7, 4));
+    data.add<King>(Square(0, 4));
 }

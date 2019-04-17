@@ -14,6 +14,7 @@ public:
 class Pawn: public Piece {
 public:
     Pawn();
+    ~Pawn();
     bool isMoveValid(int, int, int, int) override;
 
 private:

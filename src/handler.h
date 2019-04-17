@@ -23,10 +23,12 @@ private slots:
     void handleConnection();
 
 private:
+    void initialiseData(Data &data);
     void handleData(const QJsonObject&, QTcpSocket*);
     void doConnectNewPlayer(QTcpSocket*, qint16);
     void doCheckMove(const QJsonObject&, QTcpSocket*);
-    bool isPlayersConnected() { return _playersConnected; }
+    void changeModel(const Square&, const Square&);
+    bool isPlayersConnected();
 
     bool checkJson(const QJsonObject&);
     void sendDeny(QTcpSocket*);
