@@ -9,6 +9,7 @@ SOURCES += src/main.cpp \
     src/pieces.cpp \
     src/data.cpp \
     src/handler.cpp \
+    src/validator.cpp \
 
 HEADERS += \
     src/consts.h \
@@ -17,3 +18,4 @@ HEADERS += \
     src/player.h \
     src/data.h \
     src/handler.h \
+    src/validator.h \

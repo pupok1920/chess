@@ -1,13 +1,14 @@
 #ifndef __HandlerNJNBDJBNDLBNDLBNDKBNDKBNDKL__
 #define __HandlerNJNBDJBNDLBNDLBNDKBNDKBNDKL__
-#include <QDebug>
-#include <utility>
 
 #include "data.h"
 #include "player.h"
+#include "validator.h"
 
 class QTcpServer;
 class QTcpSocket;
+
+class Square;
 
 class Handler : public QObject {
     Q_OBJECT
@@ -23,16 +24,17 @@ private slots:
     void handleConnection();
 
 private:
-    void initialiseData(Data &data);
-    void handleData(const QJsonObject&, QTcpSocket*);
-    void doConnectNewPlayer(QTcpSocket*, qint16);
-    void doCheckMove(const QJsonObject&, QTcpSocket*);
-    void changeModel(const Square&, const Square&);
+    void initialiseData(Data &);
+    void handleData(const QJsonObject &, QTcpSocket *);
+    void doConnectNewPlayer(QTcpSocket *, qint16);
+    void doCheckMove(const QJsonObject &, QTcpSocket *);
+    void changeModel(const Square &, const Square &);
     bool isPlayersConnected();
 
-    bool checkJson(const QJsonObject&);
-    void sendDeny(QTcpSocket*);
-    void sendUpd(const QJsonObject&);
+    bool checkConditions(const QJsonObject &, QTcpSocket *);
+    void sendDeny(QTcpSocket *);
+    void sendAnswrCor(QTcpSocket *);
+    void sendUpd(int, int);
 
 private:
     QTcpServer *tcpServer = nullptr;
@@ -41,6 +43,7 @@ private:
     Player _blackPlayer;
     Player *_activePlayer = nullptr;
     bool _playersConnected = false;
+    Validator _validator;
 };
 
 #endif //  __HandlerNJNBDJBNDLBNDLBNDKBNDKBNDKL__

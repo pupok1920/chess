@@ -8,16 +8,24 @@
 
 class Square {
 public:
-    explicit Square(unsigned);
-    Square(unsigned, unsigned);
-    Square(): _index(0) {}
+    explicit Square(int);
+    Square(int, int);
+    Square();
 
-    unsigned row() const;
-    unsigned column() const;
-    unsigned index() const;
+    int row() const;
+    int column() const;
+    int index() const;
 
+    inline bool operator==(const Square &square) const {
+        return square.index() == _index;
+    }
+    inline bool operator<(const Square &square) const {
+        return  _index < square.index();
+    }
 private:
-    unsigned _index;
+    int _index;
 };
+
+using Squares = std::vector<Square>;
 
 #endif // __SQUARE_KJASHDKJHQWLJKEHJKQASWHNKJANBSHDJKBALKJSDBHASJDHLKJHADASDAHWJSGEWQ__

@@ -1,57 +1,74 @@
 #ifndef __PIECESFJULVFJNSJKLSNJSKLVNVNSL__
 #define __PIECESFJULVFJNSJKLSNJSKLVNVNSL__
 
+#include "consts.h"
+#include "square.h"
+
+class Data;
+
 class Piece {
 public:
     Piece();
     virtual ~Piece();
-    virtual bool isMoveValid(int, int, int, int) = 0;
+    virtual PieceColor color() const = 0;
+    virtual Squares moves(const Square &, const Data *) const = 0;
 
     Piece& operator=(Piece const&) = delete;
     Piece(Piece const&) = delete;
 };
 
-class Pawn: public Piece {
+class PieceBase: public Piece {
 public:
-    Pawn();
-    ~Pawn();
-    bool isMoveValid(int, int, int, int) override;
+    explicit PieceBase(PieceColor color);
+    PieceColor color() const;
+
+protected:
+    void diagonals(const Square &, const Data *, Squares &) const;
+    void lines(const Square &, const Data *, Squares &) const;
+    bool checkSquare(const Square &, const Data *, Squares &) const;
+    bool isOnBoard(int, int) const;
 
 private:
-    bool isFirstMove();
-    void setFirstMoveState(bool);
+    PieceColor _color;
+};
+
+class Pawn: public PieceBase {
+public:
+    explicit Pawn(PieceColor color);
+    Squares moves(const Square &, const Data *) const override;
 
 private:
-    bool _firstMove;
+    void whiteMoves(const Square &, const Data *, Squares &) const;
+    void blackMoves(const Square &, const Data *, Squares &) const;
 };
 
-class Rook: public Piece {
+class Rook: public PieceBase {
 public:
-    Rook();
-    bool isMoveValid(int, int, int, int) override;
+    explicit Rook(PieceColor color);
+    Squares moves(const Square &, const Data *) const override;
 };
 
-class Knight: public Piece {
+class Knight: public PieceBase {
 public:
-    Knight();
-    bool isMoveValid(int, int, int, int) override;
+    explicit Knight(PieceColor color);
+    Squares moves(const Square &, const Data *) const override;
 };
 
-class Bishop: public Piece {
+class Bishop: public PieceBase {
 public:
-    Bishop();
-    bool isMoveValid(int, int, int, int) override;
+    explicit Bishop(PieceColor color);
+    Squares moves(const Square &, const Data *) const override;
 };
 
-class Queen: public Piece {
+class Queen: public PieceBase {
 public:
-    Queen();
-    bool isMoveValid(int, int, int, int) override;
+    explicit Queen(PieceColor color);
+    Squares moves(const Square &, const Data *) const override;
 };
 
-class King: public Piece {
+class King: public PieceBase {
 public:
-    King();
-    bool isMoveValid(int, int, int, int) override;
+    explicit King(PieceColor color);
+    Squares moves(const Square &, const Data *) const override;
 };
 #endif // __PIECESFJULVFJNSJKLSNJSKLVNVNSL__

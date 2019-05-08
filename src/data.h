@@ -11,19 +11,17 @@ public:
     Data();
     ~Data();
 
-    //Piece *type(const PieceType&);
     template<typename T>
-    void add(const Square &square) {
-        _pieces[square.index()] = std::make_unique<T>();
+    void add(const Square &square, PieceColor color) {
+        _pieces[square.index()] = std::make_unique<T>(color);
     }
     void remove(const Square &);
-    void replace(const Square &, const Square &);
-    Piece* at(const Square &);
-    //std::unique_ptr<Piece> at(const Square &);
+    void replace(const Square &from, const Square &to);
+    Piece * at(const Square &) const;
     void clear();
 
-    Data& operator=(const Data&) = delete;
-    Data(const Data&) = delete;
+    Data& operator=(const Data &) = delete;
+    Data(const Data &) = delete;
 
 private:
     std::vector<std::unique_ptr<Piece>> _pieces;

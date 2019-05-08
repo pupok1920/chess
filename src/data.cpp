@@ -15,10 +15,8 @@ void Data::replace(const Square &squareFrom, const Square &squareTo) {
     _pieces[squareTo.index()] = std::move(_pieces[squareFrom.index()]);
 }
 
-Piece* Data::at(const Square &square) {
+Piece * Data::at(const Square &square) const {
     return _pieces.at(square.index()).get();
-//std::shared_ptr<Piece> Data::at(const Square &square) {
-    //return _pieces.at(square.index());
 }
 
 void Data::clear()
