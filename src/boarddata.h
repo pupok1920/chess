@@ -25,8 +25,7 @@ public:
     BoardData(BoardData const&) = delete;
 
 private:
-    typedef std::vector<const Piece *> Pieces;
-    Pieces _setOfPieces;
+    std::vector<const Piece *> _setOfPieces;
 
     Pawn _whitePawn;
     Pawn _blackPawn;

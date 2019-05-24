@@ -60,10 +60,12 @@ private:
 
     void initialiseBoard(BoardData &data);
     bool doConnectionRqst();
-    bool checkMove(const QJsonDocument &outDoc);
+    void doUpdates();
+    void checkMove(const QJsonObject &outJson);
+    void ordinaryMove(int draggedFrom, int draggedTo);
+    void enPassantMove(int draggedFrom, int draggedTo, int intToDelete);
     PieceType getEnumPieceType(const QString &strType);
     void changeModel(const Square &draggedFrom, const Square &draggedTo);
-    void doUpdates();
 
 private:
     QVector<QPair<int, int> > _moves;

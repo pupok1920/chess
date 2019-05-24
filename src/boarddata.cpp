@@ -16,17 +16,16 @@ void BoardData::add(const Square &square, const Piece *piece) {
 }
 
 void BoardData::remove(const Square &square) {
-    _setOfPieces[square.index()] = 0;
+    _setOfPieces[square.index()] = nullptr;
 }
 
 const Piece *BoardData::at(const Square &square) const {
     return _setOfPieces.at(square.index());
 }
 
-void BoardData::clear()
-{
+void BoardData::clear() {
     for(unsigned i = 0; i < _setOfPieces.size(); ++i) {
-        _setOfPieces[i] = 0;
+        _setOfPieces[i] = nullptr;
     }
 }
 

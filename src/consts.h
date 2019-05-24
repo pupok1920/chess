@@ -11,12 +11,12 @@ enum class PieceColor {
 };
 
 enum class PieceType {
-    PAWN = 1,
-    ROOK = 2,
-    KNIGHT = 3,
-    BISHOP = 4,
-    QUEEN = 5,
-    KING = 6
+    PAWN,
+    ROOK,
+    KNIGHT,
+    BISHOP,
+    QUEEN,
+    KING
 };
 
 enum class RqstType {
@@ -28,7 +28,9 @@ enum class AnswrType {
     SUCCESS,
     DENY,
     CORRECT,
-    UPDATE
+    CORRECT_EN_PASSANT,
+    UPDATE,
+    UPDATE_EN_PASSAN
 };
 
 #endif // __CONSTSVJSNJSNJSNVSNVNSVNSLN__
