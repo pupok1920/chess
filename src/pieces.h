@@ -11,6 +11,7 @@ public:
     Piece();
     virtual ~Piece();
     virtual PieceColor color() const = 0;
+    virtual PieceType type() const = 0;
     virtual Squares moves(const Square &, const Data *) const = 0;
 
     Piece& operator=(Piece const&) = delete;
@@ -35,6 +36,7 @@ private:
 class Pawn: public PieceBase {
 public:
     explicit Pawn(PieceColor color);
+    PieceType type() const override;
     Squares moves(const Square &, const Data *) const override;
 
 private:
@@ -45,30 +47,35 @@ private:
 class Rook: public PieceBase {
 public:
     explicit Rook(PieceColor color);
+    PieceType type() const override;
     Squares moves(const Square &, const Data *) const override;
 };
 
 class Knight: public PieceBase {
 public:
     explicit Knight(PieceColor color);
+    PieceType type() const override;
     Squares moves(const Square &, const Data *) const override;
 };
 
 class Bishop: public PieceBase {
 public:
     explicit Bishop(PieceColor color);
+    PieceType type() const override;
     Squares moves(const Square &, const Data *) const override;
 };
 
 class Queen: public PieceBase {
 public:
     explicit Queen(PieceColor color);
+    PieceType type() const override;
     Squares moves(const Square &, const Data *) const override;
 };
 
 class King: public PieceBase {
 public:
     explicit King(PieceColor color);
+    PieceType type() const override;
     Squares moves(const Square &, const Data *) const override;
 };
 #endif // __PIECESFJULVFJNSJKLSNJSKLVNVNSL__

@@ -98,6 +98,10 @@ bool PieceBase::checkSquare(const Square &square, const Data *data, Squares &res
 Pawn::Pawn(PieceColor color)
     :PieceBase(color) {}
 
+PieceType Pawn::type() const {
+    return PieceType::PAWN;
+}
+
 Squares Pawn::moves(const Square &square, const Data *data) const {
     Squares result;
     if (color() == PieceColor::WHITE_COLOR) {
@@ -178,6 +182,10 @@ void Pawn::blackMoves(const Square &square, const Data *data, Squares &result) c
 Rook::Rook(PieceColor color)
     :PieceBase(color) {}
 
+PieceType Rook::type() const {
+    return PieceType::ROOK;
+}
+
 Squares Rook::moves(const Square &square, const Data *data) const {
     Squares result;
     lines(square, data, result);
@@ -186,6 +194,10 @@ Squares Rook::moves(const Square &square, const Data *data) const {
 
 Knight::Knight(PieceColor color)
     :PieceBase(color) {}
+
+PieceType Knight::type() const {
+    return PieceType::KNIGHT;
+}
 
 Squares Knight::moves(const Square &square, const Data *data) const {
     Squares result;
@@ -205,6 +217,10 @@ Squares Knight::moves(const Square &square, const Data *data) const {
 Bishop::Bishop(PieceColor color)
     :PieceBase(color) {}
 
+PieceType Bishop::type() const {
+    return PieceType::BISHOP;
+}
+
 Squares Bishop::moves(const Square &square, const Data *data) const {
     Squares result;
     diagonals(square, data, result);
@@ -213,6 +229,10 @@ Squares Bishop::moves(const Square &square, const Data *data) const {
 
 Queen::Queen(PieceColor color)
     :PieceBase(color) {}
+
+PieceType Queen::type() const {
+    return PieceType::QUEEN;
+}
 
 Squares Queen::moves(const Square &square, const Data *data) const {
     Squares result;
@@ -223,6 +243,10 @@ Squares Queen::moves(const Square &square, const Data *data) const {
 
 King::King(PieceColor color)
     :PieceBase(color) {}
+
+PieceType King::type() const {
+    return PieceType::KING;
+}
 
 Squares King::moves(const Square &square, const Data *data) const {
     Squares result;

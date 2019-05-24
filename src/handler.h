@@ -29,12 +29,16 @@ private:
     void doConnectNewPlayer(QTcpSocket *, qint16);
     void doCheckMove(const QJsonObject &, QTcpSocket *);
     void changeModel(const Square &, const Square &);
+    void changeActivePlayer();
     bool isPlayersConnected();
 
     bool checkConditions(const QJsonObject &, QTcpSocket *);
+
     void sendDeny(QTcpSocket *);
-    void sendAnswrCor(QTcpSocket *);
+    void sendCorrect(QTcpSocket *);
+    void sendCorrectEnPassant(QTcpSocket *, int);
     void sendUpd(int, int);
+    void sendUpdEnPassant(int, int, int);
 
 private:
     QTcpServer *tcpServer = nullptr;
