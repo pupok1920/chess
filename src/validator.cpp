@@ -31,16 +31,18 @@ bool Validator::isPawnMoveValid(const Squares &moves, const Square &from, const 
         }
     }
     // if Pawn does ordinary move
-    if(isOrdinaryMoveValid(moves, to)) {
+    return isOrdinaryMoveValid(moves, to);
+}
+
+bool Validator::isOrdinaryMoveValid(const Squares &moves, const Square &to) {
+    if(std::find(moves.begin(), moves.end(), to) != moves.end()) {
         _enPassantSquare = 0;
         _enPassantPiece = 0;
         return true;
     }
-    return false;
-}
-
-bool Validator::isOrdinaryMoveValid(const Squares &moves, const Square &to) {
-    return std::find(moves.begin(), moves.end(), to) != moves.end();
+    else {
+        return false;
+    }
 }
 
 bool Validator::isEnPassantPossible() const {
