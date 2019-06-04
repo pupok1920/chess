@@ -56,7 +56,7 @@ signals:
 private:
     QHash<int, QByteArray> roleNames() const;
 
-    bool isLoadedDataValid(const QVector<QPair<int, int> > &moves);
+    bool isLoadedDataValid(const QVector<QPair<int, int>> &moves);
 
     void initialiseBoard(BoardData &data);
     bool doConnectionRqst();
@@ -68,7 +68,7 @@ private:
     void changeModel(const Square &draggedFrom, const Square &draggedTo);
 
 private:
-    QVector<QPair<int, int> > _moves;
+    QVector<QPair<int, int>> _moves;
     BoardData _data;
     Color  _activePlayer = Color::White;
     Player _playerInfo;

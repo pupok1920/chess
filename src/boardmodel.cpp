@@ -271,31 +271,37 @@ bool BoardModel::isLoadedDataValid(const QVector<QPair<int, int> > &moves) {
 
         int draggedFrom = moves[i].second;
         int draggedTo = moves[i].first;
-        Square squareFrom = static_cast<Square>(draggedFrom);
-        const Piece *pieceFrom = _data.at(squareFrom);
         qDebug() << draggedFrom;
         qDebug() << draggedTo;
 
+        Square squareFrom(draggedFrom);
+        Square squareTo(draggedTo);
+        const Piece *pieceFrom = _data.at(squareFrom);
         if(!pieceFrom) return false;
 
         if((_activePlayer == Color::White && pieceFrom->color() != PieceColor::WHITE_COLOR)
                 || (_activePlayer == Color::Black && pieceFrom->color() != PieceColor::BLACK_COLOR)) return false;
 
-        Square squareTo = static_cast<Square>(draggedTo);
-        const Piece *pieceTo = _data.at(squareTo);
+        if(draggedTo >= 0) {
+            const Piece *pieceTo = _data.at(squareTo);
+            if(pieceTo)
+                if(pieceFrom->color() == pieceTo->color()) return false;
+        }
 
-        if(pieceTo)
-            if(pieceFrom->color() == pieceTo->color()) return false;
-
-        const Piece *cur = _data.at(squareFrom);
-        _data.remove(squareTo);
-        _data.remove(squareFrom);
-        _data.add(squareTo, cur);
-        if(_activePlayer == Color::Black) {
-            _activePlayer = Color::White;
+        // checks for enPassantMove
+        if(draggedTo == -1) {
+            _data.remove(squareFrom);
         }
         else {
-            _activePlayer = Color::Black;
+            _data.remove(squareTo);
+            _data.remove(squareFrom);
+            _data.add(squareTo, pieceFrom);
+            if(_activePlayer == Color::Black) {
+                _activePlayer = Color::White;
+            }
+            else {
+                _activePlayer = Color::Black;
+            }
         }
     }
     qDebug() << "isDataValid(): true" << "\n";
@@ -322,7 +328,7 @@ void BoardModel::load(const QString &fileName) {
 
     _undoStack->clear();
     for(int i = 0; i < _moves.size(); ++i) {
-        ReplayCommand *cmd = new ReplayCommand(&_data, _moves[i], 0);
+        ReplayCommand *cmd = new ReplayCommand(&_data, _moves[i], nullptr);
         _undoStack->push(cmd);
     }
     _undoStack->setIndex(0);
@@ -333,7 +339,6 @@ void BoardModel::redo() {
         return;
 
     _undoStack->redo();
-
 
     if(_activePlayer == Color::Black) {
         _activePlayer = Color::White;

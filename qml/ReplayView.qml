@@ -48,7 +48,7 @@ Item {
             }
         }
 
-        Item {
+        /*Item {
             id: indicItem
             x: 20
             y: 485
@@ -89,7 +89,7 @@ Item {
                     }
                 }
             ]
-        }
+        }*/
     }
     Button {
         id: homeButton

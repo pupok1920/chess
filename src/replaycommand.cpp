@@ -13,19 +13,35 @@ ReplayCommand::ReplayCommand(BoardData *data, QPair<int, int> &move, QUndoComman
 ReplayCommand::~ReplayCommand() {}
 
 void ReplayCommand::redo() {
-    const Piece *cur = _data->at(_from);
-    _removedCur = _data->at(_to);
+    // if enPassantMove happened
+    if(_to.index() == -1) {
+        _removedCur = _data->at(_from);
+        _data->remove(_from);
+    }
+    // if ordinaryMove happened
+    else {
+        const Piece *cur = _data->at(_from);
+        _removedCur = _data->at(_to);
 
-    _data->remove(_to);
-    _data->remove(_from);
-    _data->add(_to, cur);
+        _data->remove(_to);
+        _data->remove(_from);
+        _data->add(_to, cur);
+    }
 }
 
 void ReplayCommand::undo() {
-    const Piece *cur = _data->at(_to);
+    // if enPassantMove happened
+    if(_to.index() == -1) {
+        _data->add(_from, _removedCur);
+        _removedCur = nullptr;
+    }
+    // if ordinaryMove happened
+    else {
+        const Piece *cur = _data->at(_to);
 
-    _data->remove(_to);
-    _data->add(_from, cur);
-    _data->add(_to, _removedCur);
-    _removedCur = nullptr;
+        _data->remove(_to);
+        _data->add(_from, cur);
+        _data->add(_to, _removedCur);
+        _removedCur = nullptr;
+    }
 }
